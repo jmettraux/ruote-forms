@@ -14,6 +14,10 @@
 
 var RuoteForms = function() {
 
+  // TODO
+  //
+  // [ ] cut/paste
+
   //
   // misc
 
@@ -130,7 +134,7 @@ var RuoteForms = function() {
         var entry = e.toObject();
         var k = entry[0];
         var v = entry[1];
-        if (k != EmptyItem && v != EmptyItem) h[k] = v;
+        if (v != EmptyItem) h[k] = v;
       });
       return h;
     }
@@ -240,7 +244,7 @@ var RuoteForms = function() {
     });
     e.onclick = function () {
       var target = this.parentNode.parentNode.firstChild;
-      var i = render_entry(target, [ EmptyItem, EmptyItem ], {});
+      var i = render_entry(target, [ '', EmptyItem ], {});
       i.parentNode.insertBefore(i, i.previousSibling);
       return false;
     };
