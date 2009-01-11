@@ -290,6 +290,8 @@ var RuoteForms = function() {
     var ett = rcreate(e, 'span', {}, 'true');
     var ef = rcreate(e, 'input', { 'type': 'radio', 'name': n });
     var eff = rcreate(e, 'span', {}, 'false');
+    ett.onclick = function () { et.checked = true; }
+    eff.onclick = function () { ef.checked = true; }
     if (data) et.checked = true;
     else ef.checked = true;
     return e;
