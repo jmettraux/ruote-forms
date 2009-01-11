@@ -255,8 +255,23 @@ var RuoteForms = function() {
     // TODO : radio
   }
 
+  function render_new_type (elt, label, initialValue) {
+    var e = rcreate(elt, 'a', { 'class': 'rform_new_type', 'href': '' }, label);
+    e.onclick = function () {
+      var enew = this.parentNode;
+      var enewp = enew.parentNode;
+      enewp.replaceChild(render(enewp, initialValue, {}), enew);
+      return false;
+    };
+  }
   function render_new (elt, options) {
-    return rcreate(elt, 'div', { 'class': 'rform_new' }, 'string number boolean array hash');
+    var e = rcreate(elt, 'div', { 'class': 'rform_new' });
+    render_new_type(e, 'string', '');
+    render_new_type(e, 'number', 0);
+    render_new_type(e, 'boolean', false);
+    render_new_type(e, 'array', []);
+    render_new_type(e, 'hash', {});
+    return e;
   }
 
   function render_number (elt, data, options) {
