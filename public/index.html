@@ -20,19 +20,26 @@
   </style>
 
   <script src="js/ruote-forms.js"></script>
+  <script src="js/fluo-json.js"></script>
 </head>
 
-<body
+<body>
 
 <div id='rform'></div>
+
+<textarea id="rform_output" cols='80' rows='4'></textarea>
 
 <script>
   RuoteForms.renderForm
     ('rform',
      { 'k0': 'v0',
        'k1': { 'k1.0': 'v1.0', 'k1.1': 'v1.1' },
-       'k2': 'whatever',
+       'k2': 4,
        'k3': [ 'red', 'green', 'blue\nwith stripes' ] });
+  
+  var out = document.getElementById('rform').firstChild.toObject();
+  out = fluoToJson(out);
+  document.getElementById('rform_output').innerHTML = out;
 </script>
 
 </body>
