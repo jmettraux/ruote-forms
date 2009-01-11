@@ -44,9 +44,8 @@
        'k3': [ 'red', 'green', 'blue\nwith stripes' ] });
 
   function displayOutput () {
-    var out = document.getElementById('rform').firstChild.toObject();
-    out = fluoToJson(out);
-    document.getElementById('rform_output').innerHTML = out;
+    document.getElementById('rform_output').innerHTML =
+      RuoteForms.toJson('rform');
   }
   displayOutput();
 </script>

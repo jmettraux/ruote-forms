@@ -89,6 +89,7 @@ var RuoteForms = function() {
     var a = [];
     for (var i in container.childNodes) {
       var n = container.childNodes[i];
+      if ( ! n) continue;
       if (n.nodeType != 1) continue;
       if (n.className != className) continue;
       a.push(n);
@@ -127,7 +128,9 @@ var RuoteForms = function() {
       var h = {};
       childrenOfClass(this, 'rform_entry').map(function(e) {
         var entry = e.toObject();
-        h[entry[0]] = entry[1];
+        var k = entry[0];
+        var v = entry[1];
+        if (k != EmptyItem && v != EmptyItem) h[k] = v;
       });
       return h;
     }
@@ -195,6 +198,26 @@ var RuoteForms = function() {
     };
   }
 
+  function addEntryButtons (elt) {
+    var e = create(elt, 'div', { 'class': 'rform_buttons', });
+    create(e, 'img', {
+      'src': 'images/btn-cut.gif',
+      'onclick': 'this.parentNode.parentNode.cut();'
+    });
+  }
+
+  function addHashButtons (elt) {
+    var e = create(elt, 'div', { 'class': 'rform_buttons', });
+    create(e, 'img', {
+      'src': 'images/btn-add.gif',
+    });
+    e.onclick = function () {
+      var target = this.parentNode.parentNode.firstChild;
+      var i = render_entry(target, [ EmptyItem, EmptyItem ], {});
+      i.parentNode.insertBefore(i, i.previousSibling);
+    };
+  }
+
   function render_item (elt, data, options) {
     var ei = rcreate(elt, 'div', { 'class': 'rform_item' });
     render(ei, data, options);
@@ -209,17 +232,22 @@ var RuoteForms = function() {
     return e;
   }
 
+  function render_entry (elt, data, options) {
+    var e = rcreate(elt, 'div', { 'class': 'rform_entry' });
+    var ek = rcreate(e, 'div', { 'class': 'rform_key' });
+    var ev = rcreate(e, 'div', { 'class': 'rform_value' });
+    create(e, 'div', { 'style': 'clear: both;' });
+    render(ek, data[0], options);
+    //ek.appendChild(document.createTextNode(':'));
+    render(ev, data[1], options);
+    addEntryButtons(e);
+    return e;
+  }
+
   function render_object (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_hash' });
-    for (var k in data) {
-      var ee = rcreate(e, 'div', { 'class': 'rform_entry' });
-      var ek = rcreate(ee, 'div', { 'class': 'rform_key' });
-      var ev = rcreate(ee, 'div', { 'class': 'rform_value' });
-      create(ee, 'div', { 'style': 'clear: both;' });
-      render(ek, k, options);
-      ek.appendChild(document.createTextNode(':'));
-      render(ev, data[k], options);
-    }
+    for (var k in data) { render_entry(e, [ k, data[k] ], options); }
+    addHashButtons(e);
     return e;
   }
 
@@ -267,8 +295,14 @@ var RuoteForms = function() {
     render(container, data, options);
   }
 
+  function toJson (container) {
+    container = byId(container);
+    return fluoToJson(container.firstChild.toObject());
+  }
+
   return {
-    renderForm: renderForm
+    renderForm: renderForm,
+    toJson: toJson
   };
 }();
 
