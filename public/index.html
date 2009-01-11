@@ -4,7 +4,9 @@
   <title>ruote-forms (take 2 maybe)</title>
   <style>
     .rform_entry {
+      /*
       background-color: gray;
+      */
       -moz-border-radius: 3px;
       -webkit-border-radius: 3px;
       border: 1px black solid;
@@ -17,6 +19,9 @@
     .rform_value {
       float: left;
     }
+    .rform_buttons {
+      display: inline;
+    }
   </style>
 
   <script src="js/ruote-forms.js"></script>
@@ -28,6 +33,7 @@
 <div id='rform'></div>
 
 <textarea id="rform_output" cols='80' rows='4'></textarea>
+<a onclick="displayOutput(); return false;" href="">refresh</a>
 
 <script>
   RuoteForms.renderForm
@@ -36,10 +42,13 @@
        'k1': { 'k1.0': 'v1.0', 'k1.1': 'v1.1' },
        'k2': 4,
        'k3': [ 'red', 'green', 'blue\nwith stripes' ] });
-  
-  var out = document.getElementById('rform').firstChild.toObject();
-  out = fluoToJson(out);
-  document.getElementById('rform_output').innerHTML = out;
+
+  function displayOutput () {
+    var out = document.getElementById('rform').firstChild.toObject();
+    out = fluoToJson(out);
+    document.getElementById('rform_output').innerHTML = out;
+  }
+  displayOutput();
 </script>
 
 </body>

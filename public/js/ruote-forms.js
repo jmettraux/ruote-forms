@@ -19,15 +19,21 @@ var RuoteForms = function() {
   //
   // misc
 
-  function dwrite () {
-    var s = "";
-    for (var i = 0; i < arguments.length; i++) { s = s + arguments[i] + ", "; }
-    document.write(". " + s + '<br/>');
+  function toArray (a) {
+    var aa = [];
+    if (a.length) { for (var i = 0; i < a.length; i++) { aa.push(a[i]); } }
+    else { for (var i in a) { aa.push(a[i]); } }
+    return aa;
   }
 
-  function clone (o) {
+  function dwrite () {
+    var s = '';
+    document.write('. ' + toArray(arguments).join(', ') + '<br/>');
+  }
+
+  function hclone (h) {
     var n = {};
-    for (var k in o) { n[k] = o[k]; }
+    for (var k in h) { n[k] = h[k]; }
     return n;
   }
 
@@ -45,7 +51,39 @@ var RuoteForms = function() {
   }
 
   //
+  // edition
+
+  function moveUp () {
+    var ps = this.previousSibling;
+    if ( ! ps) return;
+    this.parentNode.insertBefore(this, ps);
+  }
+  function moveDown () {
+    var ns = this.nextSibling;
+    if ( ! ns) return;
+    var nns = ns.nextSibling;
+    if (nns) this.parentNode.insertBefore(this, nns);
+    else this.parentNode.appendChild(this);
+  }
+
+  function cut () {
+    this.parentNode.removeChild(this);
+    return this;
+  }
+
+  //
   // toObject()
+
+  // like the ruby inject, but 'return target' is implied
+  //
+  function inject (target, func) {
+    for (var i in this) {
+      var e = this[i];
+      if ((typeof e) == 'function') continue;
+      func(target, this[i]);
+    }
+    return target;
+  }
 
   function childrenOfClass (container, className) {
     var a = [];
@@ -55,6 +93,7 @@ var RuoteForms = function() {
       if (n.className != className) continue;
       a.push(n);
     }
+    a.inject = inject;
     return a;
     //return container.childNodes.filter(function (n) {
     //  return n.nodeType == 1 && n.className == className;
@@ -75,10 +114,10 @@ var RuoteForms = function() {
   function toObject () {
     var type = this.className.match(/rform\_([^ ]*)/)[1];
     if (type == 'array') {
-      var a = childrenOfClass(this, 'rform_item').map(function(i) {
-        return i.toObject();
+      return childrenOfClass(this, 'rform_item').inject([], function(a, i) {
+        var v = i.toObject();
+        if (v != EmptyItem) a.push(v);
       });
-      return a;
     }
     if (type == 'item' || type == 'key' || type == 'value') {
       var c = rformChild(this);
@@ -102,11 +141,14 @@ var RuoteForms = function() {
       return this.firstChild.value;
     }
     if (type == 'number') {
-      return new Number(this.firstChild.value);
+      return (new Number(this.firstChild.value)).valueOf();
     }
     if (type == 'boolean') {
       // TODO
       return false;
+    }
+    if (type == 'new') {
+      return EmptyItem;
     }
     alert("unknown type '" + type + "'");
   }
@@ -114,18 +156,57 @@ var RuoteForms = function() {
   function rcreate (container, tag, attributes, content) {
     var e = create(container, tag, attributes, content);
     e.toObject = toObject;
+    e.moveUp = moveUp;
+    e.moveDown = moveDown;
+    e.cut = cut;
     return e;
   }
 
   //
   // render()
 
+  function EmptyItem () {} // a kind of 'marker'
+
+  function addItemButtons (elt) {
+    var e = create(elt, 'div', { 'class': 'rform_buttons', });
+    create(e, 'img', {
+      'src': 'images/btn-moveup.gif',
+      'onclick': 'this.parentNode.parentNode.moveUp();'
+    });
+    create(e, 'img', {
+      'src': 'images/btn-movedown.gif',
+      'onclick': 'this.parentNode.parentNode.moveDown();'
+    });
+    create(e, 'img', {
+      'src': 'images/btn-cut.gif',
+      'onclick': 'this.parentNode.parentNode.cut();'
+    });
+  }
+
+  function addArrayButtons (elt) {
+    var e = create(elt, 'div', { 'class': 'rform_buttons', });
+    create(e, 'img', {
+      'src': 'images/btn-add.gif',
+    });
+    e.onclick = function () {
+      var target = this.parentNode.parentNode.firstChild;
+      var i = render_item(target, EmptyItem, {});
+      i.parentNode.insertBefore(i, i.previousSibling);
+    };
+  }
+
+  function render_item (elt, data, options) {
+    var ei = rcreate(elt, 'div', { 'class': 'rform_item' });
+    render(ei, data, options);
+    addItemButtons(ei);
+    return ei;
+  }
+
   function render_array (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_array' });
-    for (var i = 0; i < data.length; i++) {
-      var ei = rcreate(e, 'div', { 'class': 'rform_item' });
-      render(ei, data[i], options);
-    }
+    for (var i = 0; i < data.length; i++) { render_item(e, data[i], options); }
+    addArrayButtons(e);
+    return e;
   }
 
   function render_object (elt, data, options) {
@@ -139,16 +220,21 @@ var RuoteForms = function() {
       ek.appendChild(document.createTextNode(':'));
       render(ev, data[k], options);
     }
+    return e;
   }
 
   function render_boolean (elt, data, options) {
     // TODO : radio
   }
 
+  function render_new (elt, options) {
+    return rcreate(elt, 'div', { 'class': 'rform_new' }, 'string number boolean array hash');
+  }
+
   function render_number (elt, data, options) {
-    options = clone(options);
+    options = hclone(options);
     options['class'] = 'rform_number';
-    render_string(elt, data.toString(), options);
+    return render_string(elt, data.toString(), options);
   }
 
   function render_string (elt, data, options) {
@@ -160,16 +246,18 @@ var RuoteForms = function() {
       create(e, 'textarea', { 'type': 'text' }, data);
     else
       create(e, 'input', { 'type': 'text', 'value': data });
+    return e;
   }
 
   function render (elt, data, options) {
+    if (data == EmptyItem) return render_new(elt, options);
     var t = data['__class'] || (typeof data);
     if (t == 'object') {
       var l = data.length; 
       if (l || l == 0) t = 'array';
     }
     var f = eval('render_' + t);
-    f.call(null, elt, data, options);
+    return f.call(null, elt, data, options);
   }
 
   function renderForm (container, data, options) {
