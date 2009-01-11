@@ -4,26 +4,29 @@
   <title>ruote-forms (take 2 maybe)</title>
   <style>
     .rform_entry {
-      /*
-      background-color: gray;
-      */
-      -moz-border-radius: 3px;
-      -webkit-border-radius: 3px;
-      border: 1px black solid;
-      padding: 3px;
-      margin: 3px;
+      clear: both;
     }
     .rform_key {
+      padding: 2px;
+      margin: 2px;
       float: left;
     }
     .rform_value {
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+      border: 1px black solid;
+      padding: 2px;
+      margin: 2px;
       float: left;
-    }
-    .rform_buttons {
-      display: inline;
     }
     .rform_new_type {
       margin-left: 5px;
+    }
+    .rform_buttons {
+      float: left;
+    }
+    .rform_hash > .rform_buttons {
+      clear: both;
     }
   </style>
 
@@ -35,8 +38,12 @@
 
 <div id='rform'></div>
 
-<textarea id="rform_output" cols='80' rows='4'></textarea>
-<a onclick="displayOutput(); return false;" href="">refresh</a>
+<div style="clear: both;"></div>
+
+<div>
+  <textarea id="rform_output" cols='80' rows='4'></textarea>
+  <a onclick="displayOutput(); return false;" href="">refresh</a>
+</div>
 
 <script>
   RuoteForms.renderForm

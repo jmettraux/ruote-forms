@@ -236,11 +236,11 @@ var RuoteForms = function() {
     var e = rcreate(elt, 'div', { 'class': 'rform_entry' });
     var ek = rcreate(e, 'div', { 'class': 'rform_key' });
     var ev = rcreate(e, 'div', { 'class': 'rform_value' });
-    create(e, 'div', { 'style': 'clear: both;' });
+    addEntryButtons(e);
+    //create(e, 'div', { 'style': 'clear: both;' });
     render(ek, data[0], options);
     //ek.appendChild(document.createTextNode(':'));
     render(ev, data[1], options);
-    addEntryButtons(e);
     return e;
   }
 
