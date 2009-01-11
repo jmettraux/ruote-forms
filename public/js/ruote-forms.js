@@ -14,8 +14,6 @@
 
 var RuoteForms = function() {
 
-  // TODO : undo stack (stack values, like in fluo-tred)
-
   //
   // misc
 
@@ -54,11 +52,13 @@ var RuoteForms = function() {
   // edition
 
   function moveUp () {
+    this.stack();
     var ps = this.previousSibling;
     if ( ! ps) return;
     this.parentNode.insertBefore(this, ps);
   }
   function moveDown () {
+    this.stack();
     var ns = this.nextSibling;
     if ( ! ns) return;
     var nns = ns.nextSibling;
@@ -67,8 +67,8 @@ var RuoteForms = function() {
   }
 
   function cut () {
+    this.stack();
     this.parentNode.removeChild(this);
-    return this;
   }
 
   //
@@ -159,10 +159,38 @@ var RuoteForms = function() {
   function rcreate (container, tag, attributes, content) {
     var e = create(container, tag, attributes, content);
     e.toObject = toObject;
+    e.stack = stack;
     e.moveUp = moveUp;
     e.moveDown = moveDown;
     e.cut = cut;
     return e;
+  }
+
+  //
+  // undo / copy / paste / reset
+
+  function findRoot (elt) {
+    if (elt.className.match(/rform_root/)) return elt;
+    return findRoot(elt.parentNode);
+  }
+
+  function stack () {
+    var root = findRoot(this);
+    root.stack.push(root.firstChild.toObject());
+    //dwrite(root.stack.length, fluoToJson(root.stack[root.stack.length - 1]));
+  }
+
+  function resetForm (container) {
+    var root = byId(container);
+    while (root.firstChild != null) root.removeChild(root.firstChild);
+    render(root, root.originalData, root.originalOptions);
+  }
+
+  function undo (container) {
+    var root = byId(container);
+    while (root.firstChild != null) root.removeChild(root.firstChild);
+    var data = root.stack.pop() || root.originalData;
+    render(root, data, root.originalOptions);
   }
 
   //
@@ -174,15 +202,15 @@ var RuoteForms = function() {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'img', {
       'src': 'images/btn-moveup.gif',
-      'onclick': 'this.parentNode.parentNode.moveUp();'
+      'onclick': 'this.parentNode.parentNode.moveUp(); return false;'
     });
     create(e, 'img', {
       'src': 'images/btn-movedown.gif',
-      'onclick': 'this.parentNode.parentNode.moveDown();'
+      'onclick': 'this.parentNode.parentNode.moveDown(); return false;'
     });
     create(e, 'img', {
       'src': 'images/btn-cut.gif',
-      'onclick': 'this.parentNode.parentNode.cut();'
+      'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
   }
 
@@ -202,7 +230,7 @@ var RuoteForms = function() {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'img', {
       'src': 'images/btn-cut.gif',
-      'onclick': 'this.parentNode.parentNode.cut();'
+      'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
   }
 
@@ -215,6 +243,7 @@ var RuoteForms = function() {
       var target = this.parentNode.parentNode.firstChild;
       var i = render_entry(target, [ EmptyItem, EmptyItem ], {});
       i.parentNode.insertBefore(i, i.previousSibling);
+      return false;
     };
   }
 
@@ -305,8 +334,11 @@ var RuoteForms = function() {
 
   function renderForm (container, data, options) {
     container = byId(container);
+    container.className = container.className + ' rform_root';
     if ( ! options) options = {};
     container.originalData = data;
+    container.originalOptions = options;
+    container.stack = [];
     render(container, data, options);
   }
 
@@ -317,7 +349,9 @@ var RuoteForms = function() {
 
   return {
     renderForm: renderForm,
-    toJson: toJson
+    resetForm: resetForm,
+    toJson: toJson,
+    undo: undo
   };
 }();
 
