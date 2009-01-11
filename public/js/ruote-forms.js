@@ -147,8 +147,7 @@ var RuoteForms = function() {
       return (new Number(this.firstChild.value)).valueOf();
     }
     if (type == 'boolean') {
-      // TODO
-      return false;
+      return this.firstChild.checked;
     }
     if (type == 'new') {
       return EmptyItem;
@@ -281,7 +280,15 @@ var RuoteForms = function() {
   }
 
   function render_boolean (elt, data, options) {
-    // TODO : radio
+    var n = Math.random().toString();
+    var e = rcreate(elt, 'div', { 'class': 'rform_boolean' });
+    var et = rcreate(e, 'input', { 'type': 'radio', 'name': n });
+    var ett = rcreate(e, 'span', {}, 'true');
+    var ef = rcreate(e, 'input', { 'type': 'radio', 'name': n });
+    var eff = rcreate(e, 'span', {}, 'false');
+    if (data) et.checked = true;
+    else ef.checked = true;
+    return e;
   }
 
   function render_new_type (elt, label, initialValue) {
