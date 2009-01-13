@@ -17,6 +17,7 @@ var RuoteForms = function() {
   // TODO
   //
   // [ ] cut/paste
+  // [ ] change
 
   //
   // misc
@@ -221,16 +222,21 @@ var RuoteForms = function() {
     });
   }
 
+  function createAddFunction (render_method, emptyValue) {
+    return function () {
+      var target = this.parentNode.parentNode.firstChild;
+      var i = render_method.call(null, target, emptyValue, {});
+      i.parentNode.insertBefore(i, i.previousSibling);
+      return false;
+    };
+  }
+
   function addArrayButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'img', {
       'src': 'images/btn-add.gif',
     });
-    e.onclick = function () {
-      var target = this.parentNode.parentNode.firstChild;
-      var i = render_item(target, EmptyItem, {});
-      i.parentNode.insertBefore(i, i.previousSibling);
-    };
+    e.onclick = createAddFunction(render_item, EmptyItem);
   }
 
   function addEntryButtons (elt) {
@@ -246,12 +252,7 @@ var RuoteForms = function() {
     create(e, 'img', {
       'src': 'images/btn-add.gif',
     });
-    e.onclick = function () {
-      var target = this.parentNode.parentNode.firstChild;
-      var i = render_entry(target, [ '', EmptyItem ], {});
-      i.parentNode.insertBefore(i, i.previousSibling);
-      return false;
-    };
+    e.onclick = createAddFunction(render_entry, [ '', EmptyItem ]);
   }
 
   function render_item (elt, data, options) {
