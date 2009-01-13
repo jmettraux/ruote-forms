@@ -80,6 +80,12 @@ var RuoteForms = function() {
     this.parentNode.removeChild(this);
   }
 
+  function change () {
+    this.stack();
+    var n = render(this.parentNode, EmptyItem, {});
+    this.parentNode.replaceChild(n, this);
+  }
+
   //
   // toObject()
 
@@ -171,6 +177,7 @@ var RuoteForms = function() {
     e.moveUp = moveUp;
     e.moveDown = moveDown;
     e.cut = cut;
+    e.change = change;
     return e;
   }
 
@@ -245,6 +252,12 @@ var RuoteForms = function() {
       'src': 'images/btn-cut.gif',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
+    /*
+    create(e, 'img', {
+      'src': 'images/btn-change.gif',
+      'onclick': 'this.parentNode.parentNode.change(); return false;'
+    });
+    */
   }
 
   function addHashButtons (elt) {
