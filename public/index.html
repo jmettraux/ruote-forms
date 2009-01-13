@@ -58,6 +58,7 @@
 <div>
   <textarea id="rform_output" cols='80' rows='4'></textarea>
   <a onclick="displayOutput(); return false;" href="">refresh</a>
+  <a onclick="displayInput(); return false;" href="">render</a>
 </div>
 
 <script>
@@ -69,9 +70,14 @@
        'k3': false,
        'k4': [ 'red', 'green', 'blue\nwith stripes' ] });
 
+  function displayInput () {
+    RuoteForms.renderForm(
+      'rform',
+      fluoFromJson(document.getElementById('rform_output').value));
+  }
+
   function displayOutput () {
-    document.getElementById('rform_output').innerHTML =
-      RuoteForms.toJson('rform');
+    document.getElementById('rform_output').value = RuoteForms.toJson('rform');
   }
   displayOutput();
 </script>

@@ -43,6 +43,10 @@ var RuoteForms = function() {
     return ((typeof id) == 'string') ? document.getElementById(id) : id;
   }
 
+  function clean (elt) {
+    while (elt.firstChild != null) elt.removeChild(elt.firstChild);
+  }
+
   function create (container, tag, attributes, content) {
     if ( ! attributes) attributes = {};
     var e = document.createElement(tag);
@@ -185,13 +189,13 @@ var RuoteForms = function() {
 
   function resetForm (container) {
     var root = byId(container);
-    while (root.firstChild != null) root.removeChild(root.firstChild);
+    clean(root);
     render(root, root.originalData, root.originalOptions);
   }
 
   function undo (container) {
     var root = byId(container);
-    while (root.firstChild != null) root.removeChild(root.firstChild);
+    clean(root);
     var data = root.stack.pop() || root.originalData;
     render(root, data, root.originalOptions);
   }
@@ -346,12 +350,20 @@ var RuoteForms = function() {
   }
 
   function renderForm (container, data, options) {
+
     container = byId(container);
-    container.className = container.className + ' rform_root';
-    if ( ! options) options = {};
+
+    if ( ! container.className.match(/rform_root/))
+      container.className = container.className + ' rform_root';
+    if ( ! options)
+      options = {};
+
+    clean(container);
+
     container.originalData = data;
     container.originalOptions = options;
     container.stack = [];
+
     render(container, data, options);
   }
 
