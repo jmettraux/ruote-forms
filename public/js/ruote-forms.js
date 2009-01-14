@@ -30,6 +30,15 @@ var RuoteForms = function() {
   //
   // misc
 
+  function escapeHtml (s) {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/'/g, '&#39;')
+      .replace(/"/g, '&quot;');
+  }
+
   function toArray (a) {
     var aa = [];
     if (a.length) { for (var i = 0; i < a.length; i++) { aa.push(a[i]); } }
@@ -354,7 +363,7 @@ var RuoteForms = function() {
     var klass = options['class'] || 'rform_string';
     var e = rcreate(elt, 'span', { 'class': klass });
     if (options['read-only'])
-      e.innerHTML = data;
+      e.innerHTML = escapeHtml(data);
     else if (data.match(/\n/))
       create(e, 'textarea', { 'type': 'text' }, data);
     else
