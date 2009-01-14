@@ -16,8 +16,7 @@ var RuoteForms = function() {
 
   // TODO
   //
-  // [ ] cut/paste
-  // [ ] change
+  // - [cut/]paste
 
   //
   // misc
@@ -78,12 +77,6 @@ var RuoteForms = function() {
   function cut () {
     this.stack();
     this.parentNode.removeChild(this);
-  }
-
-  function change () {
-    this.stack();
-    var n = render(this.parentNode, EmptyItem, {});
-    this.parentNode.replaceChild(n, this);
   }
 
   //
@@ -177,7 +170,6 @@ var RuoteForms = function() {
     e.moveUp = moveUp;
     e.moveDown = moveDown;
     e.cut = cut;
-    e.change = change;
     return e;
   }
 
@@ -213,6 +205,15 @@ var RuoteForms = function() {
 
   function EmptyItem () {} // a kind of 'marker'
 
+  function createChangeFunction (render_method) {
+    return function () {
+      var target = this.parentNode.parentNode;
+      var n = render_method.call(null, target, EmptyItem, {});
+      target.replaceChild(n, this);
+      return false;
+    };
+  }
+
   function addItemButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'img', {
@@ -227,23 +228,26 @@ var RuoteForms = function() {
       'src': 'images/btn-cut.gif',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
-  }
-
-  function createAddFunction (render_method, emptyValue) {
-    return function () {
-      var target = this.parentNode.parentNode.firstChild;
-      var i = render_method.call(null, target, emptyValue, {});
-      i.parentNode.insertBefore(i, i.previousSibling);
+    var ec = create(e, 'img', {
+      'src': 'images/btn-change.gif'
+    });
+    ec.onclick = function () {
+      var target = this.parentNode.parentNode;
+      var n = render_item(target.parentNode, EmptyItem, {});
+      target.parentNode.replaceChild(n, target);
       return false;
-    };
+    }
   }
 
   function addArrayButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    create(e, 'img', {
+    var ea = create(e, 'img', {
       'src': 'images/btn-add.gif',
     });
-    e.onclick = createAddFunction(render_item, EmptyItem);
+    ea.onclick = function () {
+      var i = render_item(this.parentNode.parentNode, EmptyItem, {});
+      return false;
+    }
   }
 
   function addEntryButtons (elt) {
@@ -252,20 +256,27 @@ var RuoteForms = function() {
       'src': 'images/btn-cut.gif',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
-    /*
-    create(e, 'img', {
-      'src': 'images/btn-change.gif',
-      'onclick': 'this.parentNode.parentNode.change(); return false;'
+    var ec = create(e, 'img', {
+      'src': 'images/btn-change.gif'
     });
-    */
+    ec.onclick = function () {
+      var target = this.parentNode.parentNode;
+      var k = target.firstChild.firstChild.firstChild.value;
+      var n = render_entry(target.parentNode, [ k, EmptyItem ], {});
+      target.parentNode.replaceChild(n, target);
+      return false;
+    }
   }
 
   function addHashButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    create(e, 'img', {
+    var ea = create(e, 'img', {
       'src': 'images/btn-add.gif',
     });
-    e.onclick = createAddFunction(render_entry, [ '', EmptyItem ]);
+    ea.onclick = function () {
+      var i = render_entry(this.parentNode.parentNode, [ '', EmptyItem ], {});
+      return false;
+    }
   }
 
   function render_item (elt, data, options) {
@@ -287,10 +298,9 @@ var RuoteForms = function() {
     var ek = rcreate(e, 'div', { 'class': 'rform_key' });
     var ev = rcreate(e, 'div', { 'class': 'rform_value' });
     addEntryButtons(e);
-    //create(e, 'div', { 'style': 'clear: both;' });
     render(ek, data[0], options);
-    //ek.appendChild(document.createTextNode(':'));
-    render(ev, data[1], options);
+    var evv = render(ev, data[1], options);
+    //addValueButtons(evv);
     return e;
   }
 

@@ -16,6 +16,7 @@
       */
       font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
       font-size: 1em;
+      width: 186px;
     }
     .rform_item {
       clear: both;
@@ -39,20 +40,19 @@
     .rform_new_type {
       margin-left: 5px;
     }
-    .rform_buttons {
-      float: left;
-    }
     .rform_buttons img {
       margin-top: 4px;
       margin-left: 2px;
       cursor: pointer;
     }
-    .rform_hash > .rform_buttons {
-    }
-    .rform_item > * {
+    .rform_buttons {
       float: left;
     }
+    .rform_hash > .rform_buttons {
+    }
     .rform_item > .rform_buttons {
+    }
+    .rform_item > * {
       float: left;
     }
   </style>
@@ -73,7 +73,7 @@
 </div>
 
 <div>
-  <textarea id="rform_output" cols='80' rows='4'></textarea>
+  <textarea id="rform_output" cols='80' rows='4' style="width: 600px;"></textarea>
   <a onclick="displayOutput(); return false;" href="">refresh</a>
   <a onclick="displayInput(); return false;" href="">render</a>
 </div>
