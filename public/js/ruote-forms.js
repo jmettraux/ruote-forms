@@ -18,6 +18,7 @@ var RuoteForms = function() {
   // TODO
   //
   // - [cut/]paste
+  // - rform_number validate onblur
 
   var CONFIG = {
     'img_moveup': '/images/btn-moveup.gif',
@@ -255,12 +256,19 @@ var RuoteForms = function() {
     }
   }
 
+  function addToCollection (elt) {
+    //elt.stack();
+    var ebuttons = elt.parentNode;
+    var ecollection = ebuttons.parentNode;
+    ecollection.insertBefore(elt, ebuttons);
+    return false;
+  }
+
   function addArrayButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     var ea = create(e, 'img', { 'src': CONFIG.img_add });
     ea.onclick = function () {
-      var i = render_item(this.parentNode.parentNode, EmptyItem, {});
-      return false;
+      return addToCollection(render_item(this, EmptyItem, {}));
     }
   }
 
@@ -284,8 +292,7 @@ var RuoteForms = function() {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     var ea = create(e, 'img', { 'src': CONFIG.img_add });
     ea.onclick = function () {
-      var i = render_entry(this.parentNode.parentNode, [ '', EmptyItem ], {});
-      return false;
+      return addToCollection(render_entry(this, [ '', EmptyItem ], {}));
     }
   }
 
