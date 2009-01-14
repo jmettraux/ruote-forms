@@ -20,11 +20,11 @@ var RuoteForms = function() {
   // - [cut/]paste
 
   var CONFIG = {
-    'img_moveup': 'images/btn-moveup.gif',
-    'img_movedown': 'images/btn-movedown.gif',
-    'img_cut': 'images/btn-cut.gif',
-    'img_change': 'images/btn-change.gif',
-    'img_add': 'images/btn-add.gif'
+    'img_moveup': '/images/btn-moveup.gif',
+    'img_movedown': '/images/btn-movedown.gif',
+    'img_cut': '/images/btn-cut.gif',
+    'img_change': '/images/btn-change.gif',
+    'img_add': '/images/btn-add.gif'
   }
 
   //
