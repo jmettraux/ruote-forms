@@ -12,11 +12,20 @@
  *  John Mettraux
  */
 
+
 var RuoteForms = function() {
 
   // TODO
   //
   // - [cut/]paste
+
+  var CONFIG = {
+    'img_moveup': 'images/btn-moveup.gif',
+    'img_movedown': 'images/btn-movedown.gif',
+    'img_cut': 'images/btn-cut.gif',
+    'img_change': 'images/btn-change.gif',
+    'img_add': 'images/btn-add.gif'
+  }
 
   //
   // misc
@@ -217,20 +226,18 @@ var RuoteForms = function() {
   function addItemButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'img', {
-      'src': 'images/btn-moveup.gif',
+      'src': CONFIG.img_moveup,
       'onclick': 'this.parentNode.parentNode.moveUp(); return false;'
     });
     create(e, 'img', {
-      'src': 'images/btn-movedown.gif',
+      'src': CONFIG.img_movedown,
       'onclick': 'this.parentNode.parentNode.moveDown(); return false;'
     });
     create(e, 'img', {
-      'src': 'images/btn-cut.gif',
+      'src': CONFIG.img_cut,
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
-    var ec = create(e, 'img', {
-      'src': 'images/btn-change.gif'
-    });
+    var ec = create(e, 'img', { 'src': CONFIG.img_change });
     ec.onclick = function () {
       var target = this.parentNode.parentNode;
       var n = render_item(target.parentNode, EmptyItem, {});
@@ -241,9 +248,7 @@ var RuoteForms = function() {
 
   function addArrayButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    var ea = create(e, 'img', {
-      'src': 'images/btn-add.gif',
-    });
+    var ea = create(e, 'img', { 'src': CONFIG.img_add });
     ea.onclick = function () {
       var i = render_item(this.parentNode.parentNode, EmptyItem, {});
       return false;
@@ -253,12 +258,10 @@ var RuoteForms = function() {
   function addEntryButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'img', {
-      'src': 'images/btn-cut.gif',
+      'src': CONFIG.img_cut,
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
-    var ec = create(e, 'img', {
-      'src': 'images/btn-change.gif'
-    });
+    var ec = create(e, 'img', { 'src': CONFIG.img_change });
     ec.onclick = function () {
       var target = this.parentNode.parentNode;
       var k = target.firstChild.firstChild.firstChild.value;
@@ -270,9 +273,7 @@ var RuoteForms = function() {
 
   function addHashButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    var ea = create(e, 'img', {
-      'src': 'images/btn-add.gif',
-    });
+    var ea = create(e, 'img', { 'src': CONFIG.img_add });
     ea.onclick = function () {
       var i = render_entry(this.parentNode.parentNode, [ '', EmptyItem ], {});
       return false;
@@ -300,7 +301,6 @@ var RuoteForms = function() {
     addEntryButtons(e);
     render(ek, data[0], options);
     var evv = render(ev, data[1], options);
-    //addValueButtons(evv);
     return e;
   }
 
@@ -397,6 +397,7 @@ var RuoteForms = function() {
   }
 
   return {
+    CONFIG: CONFIG,
     renderForm: renderForm,
     resetForm: resetForm,
     toJson: toJson,
