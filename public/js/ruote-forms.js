@@ -307,7 +307,10 @@ var RuoteForms = function() {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     var ea = create(e, 'img', { 'src': CONFIG.img_add });
     ea.onclick = function () {
-      return addToCollection(render_entry(e.parentNode, [ '', EmptyItem ], {}));
+      var ne = render_entry(e.parentNode, [ '', EmptyItem ], {});
+      var r = addToCollection(ne);
+      focusIn(ne);
+      return r;
     }
   }
 
@@ -337,6 +340,7 @@ var RuoteForms = function() {
 
   function render_object (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_hash' });
+    //var ks = []; for (var kk in data) { ks.push(kk); }; ks = ks.sort();
     for (var k in data) { render_entry(e, [ k, data[k] ], options); }
     addHashButtons(e);
     return e;
