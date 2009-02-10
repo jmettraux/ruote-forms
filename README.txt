@@ -8,20 +8,25 @@ a part of ruote-web2 (http://github.com/jmettraux/ruote-web2)
 
 == playing with it
 
-    sudo gem install rack mongrel
-    git clone git://github.com/jmettraux/ruote-forms.git
-    ruby start.rb
+  sudo gem install rack mongrel
+  git clone git://github.com/jmettraux/ruote-forms.git
+  ruby start.rb
 
 point browser to
 
-    http://localhost:4567
+  http://localhost:4567
    
 
 == source
 
 http://github.com/jmettraux/ruote-forms
 
-    git clone git://github.com/jmettraux/ruote-forms.git
+  git clone git://github.com/jmettraux/ruote-forms.git
+
+
+== changelog
+
+http://github.com/jmettraux/ruote-forms/commits/master/
 
 
 == feedback
