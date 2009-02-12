@@ -400,7 +400,7 @@ var RuoteForms = function() {
   }
 
   function render (elt, data, options) {
-    if (data == EmptyItem) return render_new(elt, options);
+    if (data == EmptyItem || data == null) return render_new(elt, options);
     var t = data['__class'] || (typeof data);
     if (t == 'object') {
       var l = data.length; 
