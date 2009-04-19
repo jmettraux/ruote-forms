@@ -17,13 +17,20 @@
 <body>
 
 <div id='sheet0'></div>
-<div id='sheet1'></div>
+
+<div>
+  <div>
+    <a onclick="RuoteSheets.addRow('sheet1');">add row</a>
+    <a onclick="alert(RuoteSheets.toArray('sheet1').length);">to array</a>
+  </div>
+  <div id='sheet1'></div>
+</div>
 
 <script>
 
-  RuoteSheets.renderEmpty(document.getElementById('sheet0'), 5, 5);
+  RuoteSheets.renderEmpty('sheet0', 5, 5);
 
-  RuoteSheets.render(document.getElementById('sheet1'), [
+  RuoteSheets.render('sheet1', [
     [ 'a1', 'b1', 'c1' ],
     [ 'a2', 'b2', 'c2' ],
   ]);
