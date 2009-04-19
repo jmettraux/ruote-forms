@@ -31,9 +31,8 @@ var RuoteSheets = function() {
 
   function cellOnFocus (evt) {
     var e = evt || window.event;
-    var sheet = fromElt.parentNode.parentNode;
+    var sheet = e.target.parentNode.parentNode;
     sheet.currentCell = e.target;
-    alert(sheet.currentCell.getAttribute('class'));
   }
 
   function cellOnKeyUp (evt) {
@@ -103,9 +102,9 @@ var RuoteSheets = function() {
     return cols;
   }
 
-  function render (container, data) {
+  function render (sheet, data) {
 
-    container = findElt(container);
+    sheet = findElt(sheet);
 
     var rows = data.length;
     var cols = computeColumns(data);
@@ -114,19 +113,23 @@ var RuoteSheets = function() {
 
       var rdata = data[y];
       var row = document.createElement('div');
-      row.setAttribute('class', 'ruse_row row_' + y);
-      container.appendChild(row);
+      row.setAttribute('class', 'ruse_row');
+      sheet.appendChild(row);
 
-      for (var x = 0; x < cols; x++) {
-        var input = document.createElement('input');
-        input.setAttribute('class', 'ruse_cell row_' + y +' column_' + x);
-        input.setAttribute('type', 'text');
-        input.onkeyup = cellOnKeyUp;
-        input.onfocus = cellOnFocus;
-        input.value = rdata[x];
-        row.appendChild(input);
-      }
+      for (var x = 0; x < cols; x++) { createCell(row, rdata[x]); }
     }
+
+    reclass(sheet);
+  }
+
+  function createCell (row, value) {
+    var input = document.createElement('input');
+    row.appendChild(input);
+    input.setAttribute('class', 'ruse_cell');
+    input.setAttribute('type', 'text');
+    input.onkeyup = cellOnKeyUp;
+    input.onfocus = cellOnFocus;
+    input.value = value;
   }
   
   function renderEmpty (container, rows, cols) {
@@ -142,6 +145,8 @@ var RuoteSheets = function() {
     render(container, data);
   }
 
+  // exit if func returns something than is considered true
+  //
   function iterate (sheet, func) {
     sheet = findElt(sheet);
     var y = 0;
@@ -150,22 +155,31 @@ var RuoteSheets = function() {
       if (e.nodeType != 1) continue;
       if ( ! e.getAttribute('class').match(/^ruse_row/)) continue;
       var x = 0;
-      func.call(null, 'row', x, y, e);
+      var r = func.call(null, 'row', x, y, e);
+      if (r) return [ r, 'row', x, y, e ];
       for (var xx = 0; xx < e.childNodes.length; xx++) {
         var ee = e.childNodes[xx];
         if (ee.nodeType != 1) continue;
         if ( ! ee.getAttribute('class').match(/^ruse_cell/)) continue;
-        func.call(null, 'cell', x, y, ee);
+        var r = func.call(null, 'cell', x, y, ee);
+        if (r) return [ r, 'cell', x, y, ee ];
         x++;
       }
       y++;
     }
   }
 
+  function countCols (sheet) {
+
+    return (toArray(sheet)[0] || []).length;
+  }
+
   function reclass (sheet) {
 
     iterate(sheet, function (t, x, y, e) {
-      if (t == 'cell')
+      if (t == 'row')
+        e.setAttribute('class', 'ruse_row row_' + y);
+      else if (t == 'cell')
         e.setAttribute('class', 'ruse_cell row_' + y + ' column_' + x);
     });
   }
@@ -183,12 +197,24 @@ var RuoteSheets = function() {
     return a;
   }
 
+  function placeAfter (elt, newElt) {
+    var p = elt.parentNode;
+    var n = elt.nextSibling;
+    if (n) p.insertBefore(newElt, n);
+    else p.appendChild(newElt);
+  }
+
   function addRow (sheet) {
 
     sheet = findElt(sheet);
+    var cols = countCols(sheet);
     var cell = sheet.currentCell || findCell(sheet, 0, 0);
-
-    // TODO : continue me
+    var row = cell.parentNode;
+    var newRow = document.createElement('div');
+    placeAfter(row, newRow);
+    newRow.setAttribute('class', 'ruse_row');
+    for (var x = 0; x < cols; x++) { createCell(newRow, ''); }
+    reclass(sheet);
   }
 
   return {
