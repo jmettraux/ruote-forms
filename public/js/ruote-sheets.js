@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2009, John Mettraux, jmettraux@gmail.com
+ * Copyright (c) 2009, John Mettraux, jmettraux@gmail.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,12 +70,15 @@ var RuoteSheets = function() {
   }
 
   function determineRowCol (elt) {
+
     var cc = elt.getAttribute('class').split(' ');
     return [ cc[1].split('_')[1], cc[2].split('_')[1] ];
   }
 
   function findCell (sheet, y, x) {
+
     var row = null;
+
     for (var i = 0; i < sheet.childNodes.length; i++) {
       var r = sheet.childNodes[i];
       if (r.nodeType != 1) continue;
@@ -85,6 +88,7 @@ var RuoteSheets = function() {
       }
     }
     if (row == null) return null;
+
     for (var i = 0; i < row.childNodes.length; i++) {
       var c = row.childNodes[i];
       if (c.nodeType != 1) continue;
@@ -123,13 +127,17 @@ var RuoteSheets = function() {
   }
 
   function createCell (row, value) {
-    var input = document.createElement('input');
-    row.appendChild(input);
-    input.setAttribute('class', 'ruse_cell');
-    input.setAttribute('type', 'text');
-    input.onkeyup = cellOnKeyUp;
-    input.onfocus = cellOnFocus;
-    input.value = value;
+
+    var cell = document.createElement('input');
+    row.appendChild(cell);
+
+    cell.setAttribute('class', 'ruse_cell');
+    cell.setAttribute('type', 'text');
+    cell.onkeyup = cellOnKeyUp;
+    cell.onfocus = cellOnFocus;
+    cell.value = value;
+
+    return cell;
   }
   
   function renderEmpty (container, rows, cols) {
@@ -217,10 +225,29 @@ var RuoteSheets = function() {
     reclass(sheet);
   }
 
+  function addCol (sheet) {
+
+    sheet = findElt(sheet);
+    var cell = sheet.currentCell || findCell(sheet, 0, 0);
+    var col = determineRowCol(cell)[1];
+    var cells = [];
+    iterate(sheet, function (t, x, y, e) {
+      if (t == 'cell' && x == col) cells.push(e);
+    });
+    for (var y = 0; y < cells.length; y++) {
+      var cell = cells[y];
+      var newCell = createCell(cell.parentNode, '');
+      placeAfter(cell, newCell);
+    }
+    reclass(sheet);
+  }
+
   return {
+
     render: render,
     renderEmpty: renderEmpty,
     addRow: addRow,
+    addCol: addCol,
     toArray: toArray
   };
 }();
