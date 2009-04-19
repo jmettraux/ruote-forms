@@ -1,0 +1,35 @@
+
+<html>
+<head>
+  <title>ruote-forms 'sheets'</title>
+  <style>
+    /* tb rl */
+    /* t r b l */
+    body {
+      font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
+      font-size: 12pt;
+    }
+  </style>
+
+  <script src="js/ruote-sheets.js"></script>
+</head>
+
+<body>
+
+<div id='sheet0'></div>
+<div id='sheet1'></div>
+
+<script>
+
+  RuoteSheets.renderEmpty(document.getElementById('sheet0'), 5, 5);
+
+  RuoteSheets.render(document.getElementById('sheet1'), [
+    [ 'a1', 'b1', 'c1' ],
+    [ 'a2', 'b2', 'c2' ],
+  ]);
+
+</script>
+
+</body>
+</html>
+
