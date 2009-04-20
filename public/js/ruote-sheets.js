@@ -109,11 +109,18 @@ var RuoteSheets = function() {
   }
 
   function handleOnMouseUp (evt) {
+
     var e = evt || window.event;
+
     var hr = getHeadRow(e.target);
+
     if ( ! hr.down) return;
+
     var d = e.clientX - hr.down[1];
     var w = hr.down[0].offsetWidth + d;
+
+    save(hr.parentNode);
+
     iterate(hr.parentNode, function (t, x, y, e) {
       if ((t == 'cell' || t == 'headcell') && x == hr.down[2]) {
         e.style.width = '' + w + 'px';
@@ -429,17 +436,16 @@ var RuoteSheets = function() {
 
   function save (sheet) {
     sheet = findElt(sheet);
-    var data = toArray(sheet);
     if ( ! sheet.stack) sheet.stack = [];
-    sheet.stack.push(data);
+    sheet.stack.push([ toArray(sheet), getWidths(sheet) ]);
   }
 
   function undo (sheet) {
     sheet = findElt(sheet);
     if ( ! sheet.stack || sheet.stack.length < 1) return;
-    var data = sheet.stack.pop();
+    var state = sheet.stack.pop();
     while (sheet.firstChild) { sheet.removeChild(sheet.firstChild); }
-    render(sheet, data);
+    render(sheet, state[0], state[1]);
   }
 
   return { // the 'public' stuff
