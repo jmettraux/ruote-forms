@@ -213,18 +213,29 @@ var RuoteSheets = function() {
     else p.appendChild(newElt);
   }
 
+  function currentCol (sheet, col) {
+    sheet = findElt(sheet);
+    if (col == undefined) {
+      var cell = sheet.currentCell || findCell(sheet, 0, 0);
+      col = determineRowCol(cell)[1];
+    }
+    return col;
+  }
+
+  function currentRow (sheet, row) {
+    sheet = findElt(sheet);
+    if (row == undefined) {
+      var cell = sheet.currentCell || findCell(sheet, 0, 0);
+      return cell.parentNode;
+    }
+    return findRow(sheet, row);
+  }
+
   function addRow (sheet, row) {
 
-    sheet = findElt(sheet);
-    var cols = countCols(sheet);
+    row = currentRow(sheet, row);
 
-    if (row != 0 && ( ! row)) {
-      var cell = sheet.currentCell || findCell(sheet, 0, 0);
-      row = cell.parentNode;
-    }
-    else {
-      row = findRow(sheet, row);
-    }
+    var cols = countCols(sheet);
 
     var newRow = document.createElement('div');
     placeAfter(row, newRow);
@@ -235,10 +246,7 @@ var RuoteSheets = function() {
 
   function addCol (sheet, col) {
 
-    sheet = findElt(sheet);
-    var cell = sheet.currentCell || findCell(sheet, 0, 0);
-
-    if (col != 0 && ( ! col)) col = determineRowCol(cell)[1];
+    col = currentCol(sheet, col);
 
     var cells = [];
     iterate(sheet, function (t, x, y, e) {
@@ -253,8 +261,23 @@ var RuoteSheets = function() {
   }
 
   function deleteCol (sheet, col) {
+
+    col = currentCol(sheet, col);
+    var cells = [];
+    iterate(sheet, function (t, x, y, e) {
+      if (t == 'cell' && x == col) cells.push(e);
+    });
+    for (var y = 0; y < cells.length; y++) {
+      var cell = cells[y];
+      cell.parentNode.removeChild(cell);
+    }
+    reclass(sheet);
   }
   function deleteRow (sheet, row) {
+
+    row = currentRow(sheet, row);
+    row.parentNode.removeChild(row);
+    reclass(sheet);
   }
 
   return { // the 'public' stuff
@@ -263,6 +286,8 @@ var RuoteSheets = function() {
     renderEmpty: renderEmpty,
     addRow: addRow,
     addCol: addCol,
+    deleteRow: deleteRow,
+    deleteCol: deleteCol,
     toArray: toArray
   };
 }();
