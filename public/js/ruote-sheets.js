@@ -49,7 +49,6 @@ var RuoteSheets = function() {
   }
 
   function cellOnFocus (evt) {
-
     var e = evt || window.event;
     var sheet = e.target.parentNode.parentNode;
     setCurrentCell(sheet, e.target);
@@ -66,7 +65,6 @@ var RuoteSheets = function() {
   }
 
   function cellOnKeyUp (evt) {
-
     var e = evt || window.event;
     var c = e.charCode || e.keyCode;
     //alert("" + c + " / " + e.ctrlKey + " - " + e.altKey + " - " + e.shiftKey);
@@ -166,6 +164,8 @@ var RuoteSheets = function() {
   }
 
   function createCell (row, value) {
+
+    if (value == undefined) value = '';
 
     var cell = document.createElement('input');
     row.appendChild(cell);
