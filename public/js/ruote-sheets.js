@@ -197,21 +197,25 @@ var RuoteSheets = function() {
     return widths;
   }
 
+  function renderHeadCell (headrow, x, w) {
+
+    var c = createElement(headrow, 'div', 'ruse_headcell row_-1 column_' + x);
+
+    c.style.width = '' + (w || DEFAULT_CELL_WIDTH) + 'px';
+
+    var handle = createElement(c, 'div', 'ruse_headcell_handle');
+    handle.onmousedown = handleOnMouseDown;
+
+    return c;
+  }
+
   function renderHeadRow (sheet, widths, cols) {
 
     var headrow = createElement(sheet, 'div', 'ruse_headrow');
     headrow.onmouseup = handleOnMouseUp;
 
-    for (var x = 0; x < cols; x++) {
+    for (var x = 0; x < cols; x++) { renderHeadCell(headrow, x, widths[x]); }
 
-      var headcell = createElement(
-        headrow, 'div', 'ruse_headcell row_-1 column_' + x);
-
-      headcell.style.width = '' + (widths[x] || DEFAULT_CELL_WIDTH) + 'px';
-
-      var handle = createElement(headcell, 'div', 'ruse_headcell_handle');
-      handle.onmousedown = handleOnMouseDown;
-    }
     createElement(headrow, 'div', null, { style: 'clear: both;' });
   }
 
@@ -318,22 +322,21 @@ var RuoteSheets = function() {
   }
 
   function countRows (sheet) {
-
     return toArray(sheet).length;
   }
 
   function countCols (sheet) {
-
     return (toArray(sheet)[0] || []).length;
   }
 
   function reclass (sheet) {
-
     iterate(sheet, function (t, x, y, e) {
       if (t == 'row')
         e.setAttribute('class', 'ruse_row row_' + y);
       else if (t == 'cell')
         e.setAttribute('class', 'ruse_cell row_' + y + ' column_' + x);
+      else if (t == 'headcell')
+        e.setAttribute('class', 'ruse_headcell row_-1 column_' + x);
     });
   }
 
@@ -380,8 +383,9 @@ var RuoteSheets = function() {
     row = currentRow(sheet, row);
     var cols = countCols(sheet);
     var newRow = createElement(null, 'div', 'ruse_row');
+    var widths = getWidths(sheet);
     placeAfter(row, newRow);
-    for (var x = 0; x < cols; x++) { createCell(newRow, ''); }
+    for (var x = 0; x < cols; x++) { createCell(newRow, '', widths[x]); }
     reclass(sheet);
   }
 
@@ -393,9 +397,12 @@ var RuoteSheets = function() {
 
     var cells = [];
     iterate(sheet, function (t, x, y, e) {
-      if (t == 'cell' && x == col) cells.push(e);
+      if ((t == 'cell' || t == 'headcell') && x == col) cells.push(e);
     });
-    for (var y = 0; y < cells.length; y++) {
+    var headcell = cells[0];
+    var newHeadCell = renderHeadCell(headcell.parentNode, col);
+    placeAfter(headcell, newHeadCell);
+    for (var y = 1; y < cells.length; y++) {
       var cell = cells[y];
       var newCell = createCell(cell.parentNode, '');
       placeAfter(cell, newCell);
