@@ -29,13 +29,34 @@ var RuoteSheets = function() {
     else return i;
   }
 
+  function getCurrentCell (sheet) {
+
+    sheet = findElt(sheet);
+
+    if (( ! sheet.currentCell) ||
+        ( ! sheet.currentCell.parentNode) ||
+        ( ! sheet.currentCell.parentNode.parentNode)) {
+
+      sheet.currentCell = null;
+      return findCell(sheet, 0, 0);
+    }
+    return sheet.currentCell;
+  }
+
+  function setCurrentCell (sheet, cell) {
+
+    findElt(sheet).currentCell = cell;
+  }
+
   function cellOnFocus (evt) {
+
     var e = evt || window.event;
     var sheet = e.target.parentNode.parentNode;
-    sheet.currentCell = e.target;
+    setCurrentCell(sheet, e.target);
   }
 
   function cellOnKeyUp (evt) {
+
     var e = evt || window.event;
     var c = e.charCode || e.keyCode;
     // up 38
@@ -65,7 +86,7 @@ var RuoteSheets = function() {
 
     if (cell != null) {
       cell.focus();
-      cell.parentNode.parentNode.currentCell = cell;
+      setCurrentCell(cell.parentNode.parentNode, cell);
     }
   }
 
@@ -76,6 +97,8 @@ var RuoteSheets = function() {
   }
 
   function findRow (sheet, y) {
+
+    sheet = findElt(sheet);
 
     for (var i = 0; i < sheet.childNodes.length; i++) {
       var r = sheet.childNodes[i];
@@ -178,6 +201,11 @@ var RuoteSheets = function() {
     }
   }
 
+  function countRows (sheet) {
+
+    return toArray(sheet).length;
+  }
+
   function countCols (sheet) {
 
     return (toArray(sheet)[0] || []).length;
@@ -214,18 +242,16 @@ var RuoteSheets = function() {
   }
 
   function currentCol (sheet, col) {
-    sheet = findElt(sheet);
     if (col == undefined) {
-      var cell = sheet.currentCell || findCell(sheet, 0, 0);
+      var cell = getCurrentCell(sheet);
       col = determineRowCol(cell)[1];
     }
     return col;
   }
 
   function currentRow (sheet, row) {
-    sheet = findElt(sheet);
     if (row == undefined) {
-      var cell = sheet.currentCell || findCell(sheet, 0, 0);
+      var cell = getCurrentCell(sheet);
       return cell.parentNode;
     }
     return findRow(sheet, row);
@@ -262,6 +288,8 @@ var RuoteSheets = function() {
 
   function deleteCol (sheet, col) {
 
+    if (countCols(sheet) <= 1) return;
+
     col = currentCol(sheet, col);
     var cells = [];
     iterate(sheet, function (t, x, y, e) {
@@ -273,11 +301,16 @@ var RuoteSheets = function() {
     }
     reclass(sheet);
   }
+
   function deleteRow (sheet, row) {
 
+    if (countRows(sheet) <= 1) return;
+    
+    var forgetCurrent = (row == undefined);
     row = currentRow(sheet, row);
     row.parentNode.removeChild(row);
     reclass(sheet);
+    if (forgetCurrent) setCurrentCell(sheet, null);
   }
 
   return { // the 'public' stuff
