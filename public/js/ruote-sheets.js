@@ -24,9 +24,24 @@
 
 var RuoteSheets = function() {
 
+  function dwrite (msg) {
+    document.body.appendChild(document.createTextNode(msg));
+    document.body.appendChild(document.createElement('br'));
+  }
+
+  var DEFAULT_CELL_WIDTH = 150;
+
   function findElt (i) {
     if ((typeof i) == 'string') return document.getElementById(i);
     else return i;
+  }
+
+  function createElement (parentNode, tag, klass, atts) {
+    var e = document.createElement(tag);
+    if (parentNode) parentNode.appendChild(e);
+    if (klass) e.setAttribute('class', klass);
+    if (atts) { for (k in atts) { e.setAttribute(k, atts[k]); } }
+    return e;
   }
 
   function getCurrentCell (sheet) {
@@ -78,6 +93,35 @@ var RuoteSheets = function() {
     e.target.previousValue = null; // cleaning
   }
 
+  function handleOnMouseDown (evt) {
+    var e = evt || window.event;
+    var headcell = e.target.parentNode;
+    var headrow = headcell.parentNode;
+    var col = determineRowCol(headcell)[1];
+    headrow.down = [ e.target.parentNode, e.clientX, col ];
+  }
+
+  function getHeadRow (elt) {
+    var t = getRuseType(elt);
+    if (t == 'headcell') return getHeadRow(elt.parentNode);
+    if (t == 'headrow') return elt;
+    return null;
+  }
+
+  function handleOnMouseUp (evt) {
+    var e = evt || window.event;
+    var hr = getHeadRow(e.target);
+    if ( ! hr.down) return;
+    var d = e.clientX - hr.down[1];
+    var w = hr.down[0].offsetWidth + d;
+    iterate(hr.parentNode, function (t, x, y, e) {
+      if ((t == 'cell' || t == 'headcell') && x == hr.down[2]) {
+        e.style.width = '' + w + 'px';
+      }
+    });
+    hr.down = null;
+  }
+
   function isCellEmpty (elt) {
 
     return (elt.value == '');
@@ -108,15 +152,10 @@ var RuoteSheets = function() {
   }
 
   function findRow (sheet, y) {
-
-    sheet = findElt(sheet);
-
-    for (var i = 0; i < sheet.childNodes.length; i++) {
-      var r = sheet.childNodes[i];
-      if (r.nodeType != 1) continue;
-      if (r.getAttribute('class').match(' row_' + y)) return r;
-    }
-    return null;
+    var row = iterate(sheet, function (t, x, yy, e) {
+      if (t == 'row' && yy == y) return e;
+    });
+    return row ? row[0] : null;
   }
 
   function findCell (sheet, y, x) {
@@ -126,7 +165,7 @@ var RuoteSheets = function() {
 
     for (var i = 0; i < row.childNodes.length; i++) {
       var c = row.childNodes[i];
-      if (c.nodeType != 1) continue;
+      if (getRuseType(c) != 'cell') continue;
       if (c.getAttribute('class').match(' column_' + x)) return c;
     }
     return null;
@@ -143,40 +182,73 @@ var RuoteSheets = function() {
     return cols;
   }
 
-  function render (sheet, data) {
+  function getWidths (sheet) {
+    var widths = [];
+    iterate(sheet, function (t, x, y, e) {
+      if (t == 'headcell') widths.push(e.offsetWidth);
+    });
+    return widths;
+  }
+
+  function renderHeadRow (sheet, widths, cols) {
+
+    var headrow = createElement(sheet, 'div', 'ruse_headrow');
+    headrow.onmouseup = handleOnMouseUp;
+
+    for (var x = 0; x < cols; x++) {
+
+      var headcell = createElement(
+        headrow, 'div', 'ruse_headcell row_-1 column_' + x);
+
+      headcell.style.width = '' + (widths[x] || DEFAULT_CELL_WIDTH) + 'px';
+
+      var handle = createElement(headcell, 'div', 'ruse_headcell_handle');
+      handle.onmousedown = handleOnMouseDown;
+    }
+    createElement(headrow, 'div', null, { style: 'clear: both;' });
+  }
+
+  function render (sheet, data, widths) {
+
+    if ( ! widths) {
+      widths = getWidths(sheet);
+    }
+    if ( ! widths) {
+      widths = [];
+      for (var x = 0; x < cols; x++) { widths.push(DEFAULT_CELL_WIDTH); }
+    }
 
     sheet = findElt(sheet);
 
     var rows = data.length;
     var cols = computeColumns(data);
 
+    renderHeadRow(sheet, widths, cols);
+
     for (var y = 0; y < rows; y++) {
 
       var rdata = data[y];
-      var row = document.createElement('div');
-      row.setAttribute('class', 'ruse_row');
-      sheet.appendChild(row);
-
-      for (var x = 0; x < cols; x++) { createCell(row, rdata[x]); }
+      var row = createElement(sheet, 'div', 'ruse_row');
+      for (var x = 0; x < cols; x++) { createCell(row, rdata[x], widths[x]); }
     }
 
     reclass(sheet);
   }
 
-  function createCell (row, value) {
+  function createCell (row, value, width) {
 
     if (value == undefined) value = '';
+    if ( ! width) width = DEFAULT_CELL_WIDTH;
 
-    var cell = document.createElement('input');
-    row.appendChild(cell);
+    var cell = createElement(row, 'input', 'ruse_cell');
 
-    cell.setAttribute('class', 'ruse_cell');
     cell.setAttribute('type', 'text');
     cell.onkeydown = cellOnKeyDown;
     cell.onkeyup = cellOnKeyUp;
     cell.onfocus = cellOnFocus;
     cell.onchange = cellOnChange;
     cell.value = value;
+    cell.style.width = width + 'px';
 
     return cell;
   }
@@ -194,27 +266,47 @@ var RuoteSheets = function() {
     render(container, data);
   }
 
+  function getRuseType (elt) {
+    if (elt.nodeType != 1) return false;
+    var c = elt.getAttribute('class');
+    if ( ! c) return false;
+    var m = c.match(/^ruse_([^ ]+)/);
+    return m ? m[1] : false;
+  }
+
   // exit if func returns something than is considered true
   //
   function iterate (sheet, func) {
+
     sheet = findElt(sheet);
+
     var y = 0;
+
     for (var yy = 0; yy < sheet.childNodes.length; yy++) {
+
       var e = sheet.childNodes[yy];
-      if (e.nodeType != 1) continue;
-      if ( ! e.getAttribute('class').match(/^ruse_row/)) continue;
+
+      var rowType = getRuseType(e);
+      if ( ! rowType) continue;
+
       var x = 0;
-      var r = func.call(null, 'row', x, y, e);
-      if (r) return [ r, 'row', x, y, e ];
+
+      var r = func.call(null, rowType, x, y, e);
+      if (r) return [ r, rowType, x, y, e ];
+
       for (var xx = 0; xx < e.childNodes.length; xx++) {
+
         var ee = e.childNodes[xx];
-        if (ee.nodeType != 1) continue;
-        if ( ! ee.getAttribute('class').match(/^ruse_cell/)) continue;
-        var r = func.call(null, 'cell', x, y, ee);
-        if (r) return [ r, 'cell', x, y, ee ];
+
+        var cellType = getRuseType(ee);
+        if ( ! cellType) continue;
+
+        var r = func.call(null, cellType, x, y, ee);
+        if (r) return [ r, cellType, x, y, ee ];
+
         x++;
       }
-      y++;
+      if (rowType == 'row') y++;
     }
   }
 
@@ -245,7 +337,7 @@ var RuoteSheets = function() {
 
     iterate(sheet, function (t, x, y, e) {
       if (t == 'row') { row = []; a.push(row); }
-      else { row.push(e.value); }
+      else if (t == 'cell') { row.push(e.value); }
     });
 
     return a;
@@ -279,12 +371,9 @@ var RuoteSheets = function() {
     save(sheet);
 
     row = currentRow(sheet, row);
-
     var cols = countCols(sheet);
-
-    var newRow = document.createElement('div');
+    var newRow = createElement(null, 'div', 'ruse_row');
     placeAfter(row, newRow);
-    newRow.setAttribute('class', 'ruse_row');
     for (var x = 0; x < cols; x++) { createCell(newRow, ''); }
     reclass(sheet);
   }
