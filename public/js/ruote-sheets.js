@@ -75,24 +75,25 @@ var RuoteSheets = function() {
     return [ cc[1].split('_')[1], cc[2].split('_')[1] ];
   }
 
-  function findCell (sheet, y, x) {
-
-    var row = null;
+  function findRow (sheet, y) {
 
     for (var i = 0; i < sheet.childNodes.length; i++) {
       var r = sheet.childNodes[i];
       if (r.nodeType != 1) continue;
-      if (r.getAttribute('class').match(" row_" + y)) {
-        row = r;
-        break;
-      }
+      if (r.getAttribute('class').match(' row_' + y)) return r;
     }
+    return null;
+  }
+
+  function findCell (sheet, y, x) {
+
+    var row = findRow(sheet, y);
     if (row == null) return null;
 
     for (var i = 0; i < row.childNodes.length; i++) {
       var c = row.childNodes[i];
       if (c.nodeType != 1) continue;
-      if (c.getAttribute('class').match(" column_" + x)) return c;
+      if (c.getAttribute('class').match(' column_' + x)) return c;
     }
     return null;
   }
@@ -212,12 +213,19 @@ var RuoteSheets = function() {
     else p.appendChild(newElt);
   }
 
-  function addRow (sheet) {
+  function addRow (sheet, row) {
 
     sheet = findElt(sheet);
     var cols = countCols(sheet);
-    var cell = sheet.currentCell || findCell(sheet, 0, 0);
-    var row = cell.parentNode;
+
+    if (row != 0 && ( ! row)) {
+      var cell = sheet.currentCell || findCell(sheet, 0, 0);
+      row = cell.parentNode;
+    }
+    else {
+      row = findRow(sheet, row);
+    }
+
     var newRow = document.createElement('div');
     placeAfter(row, newRow);
     newRow.setAttribute('class', 'ruse_row');
@@ -225,11 +233,13 @@ var RuoteSheets = function() {
     reclass(sheet);
   }
 
-  function addCol (sheet) {
+  function addCol (sheet, col) {
 
     sheet = findElt(sheet);
     var cell = sheet.currentCell || findCell(sheet, 0, 0);
-    var col = determineRowCol(cell)[1];
+
+    if (col != 0 && ( ! col)) col = determineRowCol(cell)[1];
+
     var cells = [];
     iterate(sheet, function (t, x, y, e) {
       if (t == 'cell' && x == col) cells.push(e);
@@ -242,7 +252,12 @@ var RuoteSheets = function() {
     reclass(sheet);
   }
 
-  return {
+  function deleteCol (sheet, col) {
+  }
+  function deleteRow (sheet, row) {
+  }
+
+  return { // the 'public' stuff
 
     render: render,
     renderEmpty: renderEmpty,
