@@ -445,6 +445,7 @@ var RuoteSheets = function() {
     sheet = findElt(sheet);
     if ( ! sheet.stack) sheet.stack = [];
     sheet.stack.push([ toArray(sheet), getWidths(sheet) ]);
+    while (sheet.stack.length > 100) { sheet.stack.shift(); }
   }
 
   function undo (sheet) {
