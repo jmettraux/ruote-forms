@@ -55,16 +55,29 @@ var RuoteSheets = function() {
     setCurrentCell(sheet, e.target);
   }
 
+  function cellOnKeyDown (evt) {
+    var e = evt || window.event;
+    var cell = e.target;
+    if ( ! cell.previousValue) {
+      save(cell.parentNode.parentNode);
+      cell.previousValue = cell.value;
+    }
+    return true;
+  }
+
   function cellOnKeyUp (evt) {
 
     var e = evt || window.event;
     var c = e.charCode || e.keyCode;
-    // up 38
-    // down 40
     //alert("" + c + " / " + e.ctrlKey + " - " + e.altKey + " - " + e.shiftKey);
     if (c == 38 || c == 40) move(e, c);
     if (isCellEmpty(e.target) && (c == 37 || c == 39)) move(e, c);
     return (c != 13);
+  }
+
+  function cellOnChange (evt) {
+    var e = evt || window.event;
+    e.target.previousValue = null; // cleaning
   }
 
   function isCellEmpty (elt) {
@@ -122,7 +135,9 @@ var RuoteSheets = function() {
   }
 
   function computeColumns (data) {
+
     var cols = 0;
+
     for (var y = 0; y < data.length; y++) {
       var row = data[y];
       if (row.length > cols) cols = row.length;
@@ -157,8 +172,10 @@ var RuoteSheets = function() {
 
     cell.setAttribute('class', 'ruse_cell');
     cell.setAttribute('type', 'text');
+    cell.onkeydown = cellOnKeyDown;
     cell.onkeyup = cellOnKeyUp;
     cell.onfocus = cellOnFocus;
+    cell.onchange = cellOnChange;
     cell.value = value;
 
     return cell;
@@ -259,6 +276,8 @@ var RuoteSheets = function() {
 
   function addRow (sheet, row) {
 
+    save(sheet);
+
     row = currentRow(sheet, row);
 
     var cols = countCols(sheet);
@@ -271,6 +290,8 @@ var RuoteSheets = function() {
   }
 
   function addCol (sheet, col) {
+
+    save(sheet);
 
     col = currentCol(sheet, col);
 
@@ -290,6 +311,8 @@ var RuoteSheets = function() {
 
     if (countCols(sheet) <= 1) return;
 
+    save(sheet);
+
     col = currentCol(sheet, col);
     var cells = [];
     iterate(sheet, function (t, x, y, e) {
@@ -305,12 +328,29 @@ var RuoteSheets = function() {
   function deleteRow (sheet, row) {
 
     if (countRows(sheet) <= 1) return;
+
+    save(sheet);
     
     var forgetCurrent = (row == undefined);
     row = currentRow(sheet, row);
     row.parentNode.removeChild(row);
     reclass(sheet);
     if (forgetCurrent) setCurrentCell(sheet, null);
+  }
+
+  function save (sheet) {
+    sheet = findElt(sheet);
+    var data = toArray(sheet);
+    if ( ! sheet.stack) sheet.stack = [];
+    sheet.stack.push(data);
+  }
+
+  function undo (sheet) {
+    sheet = findElt(sheet);
+    if ( ! sheet.stack || sheet.stack.length < 1) return;
+    var data = sheet.stack.pop();
+    while (sheet.firstChild) { sheet.removeChild(sheet.firstChild); }
+    render(sheet, data);
   }
 
   return { // the 'public' stuff
@@ -321,6 +361,7 @@ var RuoteSheets = function() {
     addCol: addCol,
     deleteRow: deleteRow,
     deleteCol: deleteCol,
+    undo: undo,
     toArray: toArray
   };
 }();
