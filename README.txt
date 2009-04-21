@@ -15,6 +15,8 @@ a part of ruote-web2 (http://github.com/jmettraux/ruote-web2)
 point browser to
 
   http://localhost:4567
+or
+  http://localhost:4567/sheet.html
    
 
 == source

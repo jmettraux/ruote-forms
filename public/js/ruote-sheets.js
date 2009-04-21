@@ -118,6 +118,7 @@ var RuoteSheets = function() {
 
     var d = e.clientX - hr.down[1];
     var w = hr.down[0].offsetWidth + d;
+    if (w < 12) w = 12; // minimal width
 
     save(hr.parentNode);
 
@@ -251,6 +252,8 @@ var RuoteSheets = function() {
   function createCell (row, value, width) {
 
     if (value == undefined) value = '';
+    if ((typeof value) != 'string') value = '' + value;
+
     if ( ! width) width = DEFAULT_CELL_WIDTH;
 
     var cell = createElement(row, 'input', 'ruse_cell');
@@ -421,7 +424,7 @@ var RuoteSheets = function() {
     col = currentCol(sheet, col);
     var cells = [];
     iterate(sheet, function (t, x, y, e) {
-      if (t == 'cell' && x == col) cells.push(e);
+      if ((t == 'cell' || t == 'headcell') && x == col) cells.push(e);
     });
     for (var y = 0; y < cells.length; y++) {
       var cell = cells[y];
@@ -467,7 +470,8 @@ var RuoteSheets = function() {
     deleteRow: deleteRow,
     deleteCol: deleteCol,
     undo: undo,
-    toArray: toArray
+    toArray: toArray, // returns the current table as a JS array
+    getWidths: getWidths // returns the current widths (a JS array)
   };
 }();
 
