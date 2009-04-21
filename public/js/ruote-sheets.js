@@ -24,12 +24,15 @@
 
 var RuoteSheets = function() {
 
+  var DEFAULT_CELL_WIDTH = 150;
+
+  //
+  // MISC FUNCTIONS
+
   function dwrite (msg) {
     document.body.appendChild(document.createTextNode(msg));
     document.body.appendChild(document.createElement('br'));
   }
-
-  var DEFAULT_CELL_WIDTH = 150;
 
   function findElt (i) {
     if ((typeof i) == 'string') return document.getElementById(i);
@@ -53,30 +56,15 @@ var RuoteSheets = function() {
       'class', elt.getAttribute('class').replace(' ' + klass, ''));
   }
 
-  function unfocusSheet (sheet) {
-    iterate(sheet, function (t, x, y, e) {
-      if (t == 'cell') removeClass(e, 'focused');
-    });
+  function placeAfter (elt, newElt) {
+    var p = elt.parentNode;
+    var n = elt.nextSibling;
+    if (n) p.insertBefore(newElt, n);
+    else p.appendChild(newElt);
   }
 
-  function getCurrentCell (sheet) {
-
-    sheet = findElt(sheet);
-
-    if (( ! sheet.currentCell) ||
-        ( ! sheet.currentCell.parentNode) ||
-        ( ! sheet.currentCell.parentNode.parentNode)) {
-
-      sheet.currentCell = null;
-      return findCell(sheet, 0, 0);
-    }
-    return sheet.currentCell;
-  }
-
-  function setCurrentCell (sheet, cell) {
-
-    findElt(sheet).currentCell = cell;
-  }
+  //
+  // EVENT HANDLERS
 
   function cellOnFocus (evt) {
     var e = evt || window.event;
@@ -117,13 +105,22 @@ var RuoteSheets = function() {
     headrow.down = [ e.target.parentNode, e.clientX, col ];
   }
 
+  function rowOnMouseDown (evt) {
+
+    var e = evt || window.event;
+    var sheet = e.target.parentNode.parentNode;
+    sheet.mouseDownCell = e.target;
+  }
+
   function rowOnMouseUp (evt) {
 
     var e = evt || window.event;
 
     var sheet = e.target.parentNode.parentNode;
 
-    var c0 = e.target;
+    var c0 = sheet.mouseDownCell;
+    if ( ! c0) return;
+
     var c1 = findCellByCoordinates(sheet, e.clientX, e.clientY);
     if ( ! c1) c1 = c0;
 
@@ -170,6 +167,34 @@ var RuoteSheets = function() {
       }
     });
     hr.down = null;
+  }
+
+  //
+  // ...
+
+  function unfocusSheet (sheet) {
+    iterate(sheet, function (t, x, y, e) {
+      if (t == 'cell') removeClass(e, 'focused');
+    });
+  }
+
+  function getCurrentCell (sheet) {
+
+    sheet = findElt(sheet);
+
+    if (( ! sheet.currentCell) ||
+        ( ! sheet.currentCell.parentNode) ||
+        ( ! sheet.currentCell.parentNode.parentNode)) {
+
+      sheet.currentCell = null;
+      return findCell(sheet, 0, 0);
+    }
+    return sheet.currentCell;
+  }
+
+  function setCurrentCell (sheet, cell) {
+
+    findElt(sheet).currentCell = cell;
   }
 
   function isCellEmpty (elt) {
@@ -241,6 +266,14 @@ var RuoteSheets = function() {
     return widths;
   }
 
+  function getRuseType (elt) {
+    if (elt.nodeType != 1) return false;
+    var c = elt.getAttribute('class');
+    if ( ! c) return false;
+    var m = c.match(/^ruse_([^ ]+)/);
+    return m ? m[1] : false;
+  }
+
   function renderHeadCell (headrow, x, w) {
 
     var c = createElement(headrow, 'div', 'ruse_headcell row_-1 column_' + x);
@@ -267,8 +300,31 @@ var RuoteSheets = function() {
 
   function createRow (sheet) {
     var row = createElement(sheet, 'div', 'ruse_row');
+    row.onmousedown = rowOnMouseDown;
     row.onmouseup = rowOnMouseUp;
     return row;
+  }
+
+  function createCell (row, value, width) {
+
+    if (value == undefined) value = '';
+    if ((typeof value) != 'string') value = '' + value;
+
+    if ( ! width) width = DEFAULT_CELL_WIDTH;
+
+    var cell = createElement(row, 'input', 'ruse_cell');
+
+    cell.setAttribute('type', 'text');
+
+    cell.onkeydown = cellOnKeyDown;
+    cell.onkeyup = cellOnKeyUp;
+    cell.onfocus = cellOnFocus;
+    cell.onchange = cellOnChange;
+
+    cell.value = value;
+    cell.style.width = width + 'px';
+
+    return cell;
   }
 
   function render (sheet, data, widths) {
@@ -297,28 +353,6 @@ var RuoteSheets = function() {
 
     reclass(sheet);
   }
-
-  function createCell (row, value, width) {
-
-    if (value == undefined) value = '';
-    if ((typeof value) != 'string') value = '' + value;
-
-    if ( ! width) width = DEFAULT_CELL_WIDTH;
-
-    var cell = createElement(row, 'input', 'ruse_cell');
-
-    cell.setAttribute('type', 'text');
-
-    cell.onkeydown = cellOnKeyDown;
-    cell.onkeyup = cellOnKeyUp;
-    cell.onfocus = cellOnFocus;
-    cell.onchange = cellOnChange;
-
-    cell.value = value;
-    cell.style.width = width + 'px';
-
-    return cell;
-  }
   
   function renderEmpty (container, rows, cols) {
 
@@ -331,14 +365,6 @@ var RuoteSheets = function() {
       data.push(row);
     }
     render(container, data);
-  }
-
-  function getRuseType (elt) {
-    if (elt.nodeType != 1) return false;
-    var c = elt.getAttribute('class');
-    if ( ! c) return false;
-    var m = c.match(/^ruse_([^ ]+)/);
-    return m ? m[1] : false;
   }
 
   // exit if func returns something than is considered true
@@ -440,13 +466,6 @@ var RuoteSheets = function() {
       if (row.length > 0) aa.push(row);
     }
     return aa;
-  }
-
-  function placeAfter (elt, newElt) {
-    var p = elt.parentNode;
-    var n = elt.nextSibling;
-    if (n) p.insertBefore(newElt, n);
-    else p.appendChild(newElt);
   }
 
   function currentCol (sheet, col) {
