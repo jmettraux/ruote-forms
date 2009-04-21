@@ -222,6 +222,11 @@ var RuoteSheets = function() {
     createElement(headrow, 'div', null, { style: 'clear: both;' });
   }
 
+  function createRow (sheet) {
+    var row = createElement(sheet, 'div', 'ruse_row');
+    return row;
+  }
+
   function render (sheet, data, widths) {
 
     if ( ! widths) {
@@ -242,7 +247,7 @@ var RuoteSheets = function() {
     for (var y = 0; y < rows; y++) {
 
       var rdata = data[y];
-      var row = createElement(sheet, 'div', 'ruse_row');
+      var row = createRow(sheet);
       for (var x = 0; x < cols; x++) { createCell(row, rdata[x], widths[x]); }
     }
 
@@ -387,7 +392,7 @@ var RuoteSheets = function() {
 
     row = currentRow(sheet, row);
     var cols = countCols(sheet);
-    var newRow = createElement(null, 'div', 'ruse_row');
+    var newRow = createRow(null);
     var widths = getWidths(sheet);
     placeAfter(row, newRow);
     for (var x = 0; x < cols; x++) { createCell(newRow, '', widths[x]); }
