@@ -101,6 +101,18 @@ var RuoteSheets = function() {
     headrow.down = [ e.target.parentNode, e.clientX, col ];
   }
 
+  function rowOnMouseDown (evt) {
+    var e = evt || window.event;
+    dwrite('down at ' + e.target.getAttribute('class'));
+  }
+
+  function rowOnMouseUp (evt) {
+    var e = evt || window.event;
+    dwrite('up at ' + e.clientX + '/' + e.clientY);
+    var c = findCellByCoordinates(e.target.parentNode.parentNode, e.clientX, e.clientY);
+    dwrite('' + c.getAttribute('class'));
+  }
+
   function getHeadRow (elt) {
     var t = getRuseType(elt);
     if (t == 'headcell') return getHeadRow(elt.parentNode);
@@ -224,6 +236,8 @@ var RuoteSheets = function() {
 
   function createRow (sheet) {
     var row = createElement(sheet, 'div', 'ruse_row');
+    row.onmousedown = rowOnMouseDown;
+    row.onmouseup = rowOnMouseUp;
     return row;
   }
 
@@ -264,10 +278,12 @@ var RuoteSheets = function() {
     var cell = createElement(row, 'input', 'ruse_cell');
 
     cell.setAttribute('type', 'text');
+
     cell.onkeydown = cellOnKeyDown;
     cell.onkeyup = cellOnKeyUp;
     cell.onfocus = cellOnFocus;
     cell.onchange = cellOnChange;
+
     cell.value = value;
     cell.style.width = width + 'px';
 
@@ -329,6 +345,23 @@ var RuoteSheets = function() {
       }
       if (rowType == 'row') y++;
     }
+  }
+
+  function findCellByCoordinates (sheet, x, y) { // mouse coordinates
+
+    var r = iterate(sheet, function (t, xx, yy, e) {
+
+      if (t != 'cell') return false;
+
+      var ex = e.offsetLeft; var ey = e.offsetTop;
+      var ew = ex + e.offsetWidth; var eh = ey + e.offsetHeight;
+      if (x < ex || x > ew) return false;
+      if (y < ey || y > eh) return false;
+
+      return e;
+    });
+
+    return r ? r[0] : null;
   }
 
   function countRows (sheet) {
