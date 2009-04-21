@@ -203,6 +203,8 @@ var RuoteSheets = function() {
 
     c.style.width = '' + (w || DEFAULT_CELL_WIDTH) + 'px';
 
+    createElement(c, 'div', 'ruse_headcell_left');
+
     var handle = createElement(c, 'div', 'ruse_headcell_handle');
     handle.onmousedown = handleOnMouseDown;
 
