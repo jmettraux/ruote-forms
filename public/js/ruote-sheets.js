@@ -44,6 +44,21 @@ var RuoteSheets = function() {
     return e;
   }
 
+  function addClass (elt, klass) {
+    elt.setAttribute('class', elt.getAttribute('class') + ' ' + klass);
+  }
+  function removeClass (elt, klass) {
+    // warning : naive on the right border (after word)
+    elt.setAttribute(
+      'class', elt.getAttribute('class').replace(' ' + klass, ''));
+  }
+
+  function unfocusSheet (sheet) {
+    iterate(sheet, function (t, x, y, e) {
+      if (t == 'cell') removeClass(e, 'focused');
+    });
+  }
+
   function getCurrentCell (sheet) {
 
     sheet = findElt(sheet);
@@ -66,6 +81,7 @@ var RuoteSheets = function() {
   function cellOnFocus (evt) {
     var e = evt || window.event;
     var sheet = e.target.parentNode.parentNode;
+    unfocusSheet(sheet);
     setCurrentCell(sheet, e.target);
   }
 
@@ -101,16 +117,30 @@ var RuoteSheets = function() {
     headrow.down = [ e.target.parentNode, e.clientX, col ];
   }
 
-  function rowOnMouseDown (evt) {
-    var e = evt || window.event;
-    dwrite('down at ' + e.target.getAttribute('class'));
-  }
-
   function rowOnMouseUp (evt) {
+
     var e = evt || window.event;
-    dwrite('up at ' + e.clientX + '/' + e.clientY);
-    var c = findCellByCoordinates(e.target.parentNode.parentNode, e.clientX, e.clientY);
-    dwrite('' + c.getAttribute('class'));
+
+    var sheet = e.target.parentNode.parentNode;
+
+    var c0 = e.target;
+    var c1 = findCellByCoordinates(sheet, e.clientX, e.clientY);
+    if ( ! c1) c1 = c0;
+
+    var rc0 = determineRowCol(c0);
+    var rc1 = determineRowCol(c1);
+    var minx = Math.min(rc0[1], rc1[1]);
+    var miny = Math.min(rc0[0], rc1[0]);
+    var maxx = Math.max(rc0[1], rc1[1]);
+    var maxy = Math.max(rc0[0], rc1[0]);
+
+    //dwrite('' + minx + '/' + miny + '  // ' + maxx + '/' + maxy);
+    iterate(sheet, function (t, x, y, e) {
+      if (t != 'cell') return false;
+      if (x < minx || x > maxx) return false;
+      if (y < miny || y > maxy) return false;
+      addClass(e, 'focused');
+    });
   }
 
   function getHeadRow (elt) {
@@ -161,6 +191,7 @@ var RuoteSheets = function() {
 
     if (cell != null) {
       cell.focus();
+      addClass(cell, 'focused'); // not using :focus
       setCurrentCell(cell.parentNode.parentNode, cell);
     }
   }
@@ -236,7 +267,6 @@ var RuoteSheets = function() {
 
   function createRow (sheet) {
     var row = createElement(sheet, 'div', 'ruse_row');
-    row.onmousedown = rowOnMouseDown;
     row.onmouseup = rowOnMouseUp;
     return row;
   }
@@ -396,6 +426,22 @@ var RuoteSheets = function() {
     return a;
   }
 
+  function focusedToArray (sheet) {
+    var a = [];
+    var r = null;
+    iterate(sheet, function (t, x, y, e) {
+      if (t == 'row') { r = []; a.push(r); }
+      if (t != 'cell') return false;
+      if (e.getAttribute('class').match(/ focused/)) r.push(e.value);
+    });
+    var aa = [];
+    for (var y = 0; y < a.length; y++) {
+      var row = a[y];
+      if (row.length > 0) aa.push(row);
+    }
+    return aa;
+  }
+
   function placeAfter (elt, newElt) {
     var p = elt.parentNode;
     var n = elt.nextSibling;
@@ -509,7 +555,8 @@ var RuoteSheets = function() {
     deleteCol: deleteCol,
     undo: undo,
     toArray: toArray, // returns the current table as a JS array
-    getWidths: getWidths // returns the current widths (a JS array)
+    getWidths: getWidths, // returns the current widths (a JS array)
+    focusedToArray: focusedToArray,
   };
 }();
 
