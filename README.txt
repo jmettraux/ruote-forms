@@ -48,5 +48,5 @@ http://jmettraux.wordpress.com
 
 == license
 
-BSD (see LICENSE.txt)
+MIT
 
