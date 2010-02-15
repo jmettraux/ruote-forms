@@ -1,4 +1,4 @@
 
 [o] move to sinatra
-[ ] drop fluo-json
+[o] drop fluo-json
 

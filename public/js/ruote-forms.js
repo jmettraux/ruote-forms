@@ -212,7 +212,6 @@ var RuoteForms = function() {
   function stack () {
     var root = findRoot(this);
     root.stack.push(root.firstChild.toObject());
-    //dwrite(root.stack.length, fluoToJson(root.stack[root.stack.length - 1]));
   }
 
   function resetForm (container) {
@@ -439,7 +438,7 @@ var RuoteForms = function() {
 
   function toJson (container) {
     container = byId(container);
-    return fluoToJson(container.firstChild.toObject());
+    return JSON.stringify(container.firstChild.toObject());
   }
 
   return {
