@@ -36,7 +36,7 @@ var RuoteSheets = function() {
 
   function findElt (i) {
     if ((typeof i) == 'string') return document.getElementById(i);
-    else return i;
+    return i;
   }
 
   function createElement (parentNode, tag, klass, atts) {

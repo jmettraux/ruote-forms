@@ -1,0 +1,65 @@
+
+<html>
+<head>
+  <title>ruote-forms</title>
+  <link href="/css/reset.css" type="text/css" rel="stylesheet" />
+  <link href="/css/ruote-forms.css" type="text/css" rel="stylesheet" />
+  <style>
+    /* tb rl */
+    /* t r b l */
+    body {
+      font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
+      font-size: 14pt;
+      margin: auto 0px;
+    }
+    input[type="text"], textarea {
+      font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
+      font-size: 1em;
+      width: 186px;
+    }
+  </style>
+
+  <script src="js/ruote-forms.js"></script>
+</head>
+
+<body>
+
+<div id='rform'></div>
+
+<div style="clear: both;"></div>
+
+<div>
+  <a href="" onclick="RuoteForms.resetForm('rform'); return false;">reset</a>
+  <a href="" onclick="RuoteForms.undo('rform'); return false;">undo</a>
+</div>
+
+<div>
+  <textarea id="rform_output" cols='80' rows='4' style="width: 600px;"></textarea>
+  <a onclick="displayOutput(); return false;" href="">refresh</a>
+  <a onclick="displayInput(); return false;" href="">render</a>
+</div>
+
+<script>
+  RuoteForms.renderForm
+    ('rform',
+     { 'k0': 'v0',
+       'k1': { 'k1.0': 'v1.0', 'k1.1': 'v1.1' },
+       'k2': 4,
+       'k3': false,
+       'k4': [ 'red', 'green', 'blue\nwith stripes' ] });
+
+  function displayInput () {
+    RuoteForms.renderForm(
+      'rform',
+      JSON.parse(document.getElementById('rform_output').value));
+  }
+
+  function displayOutput () {
+    document.getElementById('rform_output').value = RuoteForms.toJson('rform');
+  }
+  displayOutput();
+</script>
+
+</body>
+</html>
+

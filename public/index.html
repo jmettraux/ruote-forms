@@ -1,105 +1,17 @@
 
 <html>
 <head>
-  <title>ruote-forms (take 2 maybe)</title>
-  <style>
-    /* tb rl */
-    /* t r b l */
-    body {
-      font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
-      font-size: 12pt;
-    }
-    input, textarea {
-      /*
-      border-color:-moz-use-text-color -moz-use-text-color #DDDDDD;
-      border-style:none none dotted;
-      */
-      font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
-      font-size: 1em;
-      width: 186px;
-    }
-    .rform_item {
-      clear: both;
-    }
-    .rform_entry {
-      clear: both;
-    }
-    .rform_key {
-      padding: 2px 2px 2px 0px;
-      margin: 2px 2px 2px 0px;
-      float: left;
-    }
-    .rform_value {
-      -moz-border-radius: 3px;
-      -webkit-border-radius: 3px;
-      border: 1px black solid;
-      padding: 2px;
-      margin: 2px;
-      float: left;
-    }
-    .rform_new_type {
-      margin-left: 5px;
-    }
-    .rform_buttons img {
-      margin-top: 4px;
-      margin-left: 2px;
-      cursor: pointer;
-    }
-    .rform_buttons {
-      float: left;
-    }
-    .rform_hash > .rform_buttons {
-      clear: both;
-    }
-    .rform_item > .rform_buttons {
-    }
-    .rform_item > * {
-      float: left;
-    }
-  </style>
-
-  <script src="js/ruote-forms.js"></script>
-  <script src="js/fluo-json.js"></script>
+  <title>form | sheet</title>
+  <link href="/css/reset.css" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
-
-<div id='rform'></div>
-
-<div style="clear: both;"></div>
-
-<div>
-  <a href="" onclick="RuoteForms.resetForm('rform'); return false">reset</a>
-  <a href="" onclick="RuoteForms.undo('rform'); return false">undo</a>
-</div>
-
-<div>
-  <textarea id="rform_output" cols='80' rows='4' style="width: 600px;"></textarea>
-  <a onclick="displayOutput(); return false;" href="">refresh</a>
-  <a onclick="displayInput(); return false;" href="">render</a>
-</div>
-
-<script>
-  RuoteForms.renderForm
-    ('rform',
-     { 'k0': 'v0',
-       'k1': { 'k1.0': 'v1.0', 'k1.1': 'v1.1' },
-       'k2': 4,
-       'k3': false,
-       'k4': [ 'red', 'green', 'blue\nwith stripes' ] });
-
-  function displayInput () {
-    RuoteForms.renderForm(
-      'rform',
-      fluoFromJson(document.getElementById('rform_output').value));
-  }
-
-  function displayOutput () {
-    document.getElementById('rform_output').value = RuoteForms.toJson('rform');
-  }
-  displayOutput();
-</script>
-
+  <p>
+    <a href="/form.html">form.html</a>
+  </p>
+  <p>
+    <a href="/sheet.html">sheet.html</a>
+  </p>
 </body>
 </html>
 

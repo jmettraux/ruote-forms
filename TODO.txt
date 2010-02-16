@@ -2,3 +2,6 @@
 [o] move to sinatra
 [o] drop fluo-json
 
+[x] cursor movements should not be put in the undo stack
+[x] fix rebuild flicker
+
