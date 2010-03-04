@@ -29,14 +29,6 @@ var RuoteForms = function() {
   // - [cut/]paste
   // - rform_number validate onblur
 
-  var CONFIG = {
-    'img_moveup': '/images/btn-moveup.gif',
-    'img_movedown': '/images/btn-movedown.gif',
-    'img_cut': '/images/btn-cut.gif',
-    'img_change': '/images/btn-change.gif',
-    'img_add': '/images/btn-add.gif'
-  }
-
   //
   // misc
 
@@ -259,19 +251,23 @@ var RuoteForms = function() {
 
   function addItemButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    create(e, 'img', {
-      'src': CONFIG.img_moveup,
+    create(e, 'a', {
+      'href': '',
+      'class': 'rform_button rform_button_moveup',
       'onclick': 'this.parentNode.parentNode.moveUp(); return false;'
     });
-    create(e, 'img', {
-      'src': CONFIG.img_movedown,
+    create(e, 'a', {
+      'href': '',
+      'class': 'rform_button rform_button_movedown',
       'onclick': 'this.parentNode.parentNode.moveDown(); return false;'
     });
-    create(e, 'img', {
-      'src': CONFIG.img_cut,
+    create(e, 'a', {
+      'href': '',
+      'class': 'rform_button rform_button_cut',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
-    var ec = create(e, 'img', { 'src': CONFIG.img_change });
+    var ec = create(e, 'a', {
+      'href': '', 'class': 'rform_button rform_button_change' });
     ec.onclick = function () {
       var target = this.parentNode.parentNode;
       var n = render_item(target.parentNode, EmptyItem, {});
@@ -289,7 +285,8 @@ var RuoteForms = function() {
 
   function addArrayButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    var ea = create(e, 'img', { 'src': CONFIG.img_add });
+    var ea = create(e, 'a', {
+      'href': '', 'class': 'rform_button rform_button_add' });
     ea.onclick = function () {
       return addToCollection(render_item(e.parentNode, EmptyItem, {}));
     }
@@ -297,11 +294,13 @@ var RuoteForms = function() {
 
   function addEntryButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    create(e, 'img', {
-      'src': CONFIG.img_cut,
+    create(e, 'a', {
+      'href': '',
+      'class': 'rform_button rform_button_cut',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
-    var ec = create(e, 'img', { 'src': CONFIG.img_change });
+    var ec = create(e, 'a', {
+      'href': '', 'class': 'rform_button rform_button_change' });
     ec.onclick = function () {
       var target = this.parentNode.parentNode;
       var k = target.firstChild.firstChild.firstChild.value;
@@ -313,7 +312,8 @@ var RuoteForms = function() {
 
   function addHashButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
-    var ea = create(e, 'img', { 'src': CONFIG.img_add });
+    var ea = create(e, 'a', {
+      'href': '', 'class': 'rform_button rform_button_add' });
     ea.onclick = function () {
       var ne = render_entry(e.parentNode, [ '', EmptyItem ], {});
       var r = addToCollection(ne);
@@ -442,7 +442,6 @@ var RuoteForms = function() {
   }
 
   return {
-    CONFIG: CONFIG,
     renderForm: renderForm,
     resetForm: resetForm,
     toJson: toJson,

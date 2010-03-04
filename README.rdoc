@@ -16,6 +16,8 @@ point browser to
 
   http://localhost:4567
 or
+  http://localhost:4567/form.html
+or
   http://localhost:4567/sheet.html
    
 

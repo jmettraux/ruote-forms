@@ -45,3 +45,42 @@ input, textarea {
 .rform_item > * {
   float: left;
 }
+
+a.rform_button {
+  display: inline-block;
+  padding: 0;
+  margin: 0 -1px;
+  width: 12px;
+  height: 12px;
+  background: transparent url(/images/rform_buttons.png) no-repeat;
+}
+a.rform_button_add {
+  background-position: 0 0;
+}
+a.rform_button_cut {
+  background-position: 0 -20px;
+}
+a.rform_button_moveup {
+  background-position: 0 -40px;
+}
+a.rform_button_movedown {
+  background-position: 0 -60px;
+}
+a.rform_button_paste {
+  background-position: 0 -80px;
+}
+a.rform_button_add:hover {
+  background-position: -20px 0;
+}
+a.rform_button_cut:hover {
+  background-position: -20px -20px;
+}
+a.rform_button_moveup:hover {
+  background-position: -20px -40px;
+}
+a.rform_button_movedown:hover {
+  background-position: -20px -60px;
+}
+a.rform_button_paste:hover {
+  background-position: -20px -80px;
+}
