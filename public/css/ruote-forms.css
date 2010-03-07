@@ -1,86 +1,133 @@
+/* @override http://127.0.0.1:3000/stylesheets/ruote-forms.css */
+
 /* tb rl */
 /* t r b l */
-/*
+
 input, textarea {
-  font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
-  font-size: 1em;
-  width: 186px;
+	/*font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
+	font-size: 1em;
+	width: 186px;*/
 }
-*/
-.rform_item {
-  clear: both;
+input[type=text] {
+	width: 150px;
 }
-.rform_entry {
-  clear: both;
+input[type=radio] {
+	margin: 0 4px;
+}
+.rform_root {
+	font: 14px/1.75em "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+}
+.rform_item, .rform_entry, .rform_new {
+	white-space: nowrap;
+	padding: 3px 0;
+}
+.rform_item > *, .rform_entry > *, .rform_new > * {
+	vertical-align: top;
+}
+.rform_key, .rform_value {
+	display: inline-block;
+	padding: 4px;
+	border: 1px solid;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	line-height: 1.5em;
 }
 .rform_key {
-  padding: 2px 2px 2px 0px;
-  margin: 2px 2px 2px 0px;
-  float: left;
+	padding-left: 0;
+	margin-left: 0;
+	border-color: white;
+	color: #8b8f91;
+	text-align: right;
+	min-width: 146px;
 }
 .rform_value {
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border: 1px black solid;
-  padding: 2px;
-  margin: 2px;
-  float: left;
+	border-color: #aeb1b5;
+}
+.rform_boolean {
+	padding: 1px 0;
+}
+.rform_boolean input:first-child {
+	margin-left: 0;
 }
 .rform_new_type {
-  margin-left: 5px;
+	display: inline-block;
+	margin-left: 1px;
+	padding: 0 6px;
+	color: white;
+	background: #77ce41;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 12px;
+	font-size: 12px;
+	line-height: 1.5em;
+	font-weight: bold;
+	text-decoration: none;
+}
+.rform_new_type:active {
+	background: #6fbf40;
+}
+.rform_new_type:hover {
+	cursor: pointer;
+	text-shadow: #555555 0 1px 0;
 }
 .rform_buttons img {
-  margin-top: 4px;
-  margin-left: 2px;
-  cursor: pointer;
+	margin-top: 4px;
+	margin-left: 2px;
+	cursor: pointer;
 }
 .rform_buttons {
-  float: left;
+	display: inline-block;
+	white-space: nowrap;
+	margin-top: 1px;
+	padding: 4px;
+}
+.rform_item .rform_buttons {
+	padding: 0 4px;
+}
+.rform_hash .rform_entry:first-child {
+	/*padding-top: 0;*/
 }
 .rform_hash > .rform_buttons {
-  clear: both;
-}
-.rform_item > .rform_buttons {
+	clear: both;
 }
 .rform_item > * {
-  float: left;
+	display: inline-block;
 }
-
 a.rform_button {
-  display: inline-block;
-  padding: 0;
-  margin: 0 -1px;
-  width: 12px;
-  height: 12px;
-  background: transparent url(/images/rform_buttons.png) no-repeat;
+	display: inline-block;
+	margin-right: 1px;
+	width: 12px;
+	height: 12px;
+	background: transparent url(/images/rform_buttons.png) no-repeat;
 }
 a.rform_button_add {
-  background-position: 0 0;
+	background-position: 0 0;
 }
 a.rform_button_cut {
-  background-position: 0 -20px;
+	background-position: 0 -20px;
 }
 a.rform_button_moveup {
-  background-position: 0 -40px;
+	background-position: 0 -40px;
 }
 a.rform_button_movedown {
-  background-position: 0 -60px;
+	background-position: 0 -60px;
 }
-a.rform_button_paste {
-  background-position: 0 -80px;
+a.rform_button_change {
+	background-position: 0 -80px;
 }
 a.rform_button_add:hover {
-  background-position: -20px 0;
+	background-position: -20px 0;
 }
 a.rform_button_cut:hover {
-  background-position: -20px -20px;
+	background-position: -20px -20px;
 }
 a.rform_button_moveup:hover {
-  background-position: -20px -40px;
+	background-position: -20px -40px;
 }
 a.rform_button_movedown:hover {
-  background-position: -20px -60px;
+	background-position: -20px -60px;
 }
-a.rform_button_paste:hover {
-  background-position: -20px -80px;
+a.rform_button_change:hover {
+	background-position: -20px -80px;
 }
