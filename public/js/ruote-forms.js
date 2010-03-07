@@ -29,6 +29,16 @@ var RuoteForms = function() {
   // - [cut/]paste
   // - rform_number validate onblur
 
+  // buttons 'title', accessible as RuoteForms.TEXTS
+  //
+  var TEXTS = {
+    add: "add a value to this container value",
+    cut: "cut/remove this value",
+    change: "modify this value (and its type)",
+    moveup: "move that value up in the array",
+    movedown: "move that value down in the array"
+  }
+
   //
   // misc
 
@@ -253,21 +263,26 @@ var RuoteForms = function() {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'a', {
       'href': '',
+      'title': TEXTS.moveup,
       'class': 'rform_button rform_button_moveup',
       'onclick': 'this.parentNode.parentNode.moveUp(); return false;'
     });
     create(e, 'a', {
       'href': '',
+      'title': TEXTS.movedown,
       'class': 'rform_button rform_button_movedown',
       'onclick': 'this.parentNode.parentNode.moveDown(); return false;'
     });
     create(e, 'a', {
       'href': '',
+      'title': TEXTS.cut,
       'class': 'rform_button rform_button_cut',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
     var ec = create(e, 'a', {
-      'href': '', 'class': 'rform_button rform_button_change' });
+      'href': '',
+      'title': TEXTS.change,
+      'class': 'rform_button rform_button_change' });
     ec.onclick = function () {
       var target = this.parentNode.parentNode;
       var n = render_item(target.parentNode, EmptyItem, {});
@@ -286,7 +301,9 @@ var RuoteForms = function() {
   function addArrayButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     var ea = create(e, 'a', {
-      'href': '', 'class': 'rform_button rform_button_add' });
+      'href': '',
+      'title': TEXTS.add,
+      'class': 'rform_button rform_button_add' });
     ea.onclick = function () {
       return addToCollection(render_item(e.parentNode, EmptyItem, {}));
     }
@@ -296,6 +313,7 @@ var RuoteForms = function() {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     create(e, 'a', {
       'href': '',
+      'title': TEXTS.cut,
       'class': 'rform_button rform_button_cut',
       'onclick': 'this.parentNode.parentNode.cut(); return false;'
     });
@@ -313,7 +331,9 @@ var RuoteForms = function() {
   function addHashButtons (elt) {
     var e = create(elt, 'div', { 'class': 'rform_buttons', });
     var ea = create(e, 'a', {
-      'href': '', 'class': 'rform_button rform_button_add' });
+      'href': '',
+      'title': TEXTS.add,
+      'class': 'rform_button rform_button_add' });
     ea.onclick = function () {
       var ne = render_entry(e.parentNode, [ '', EmptyItem ], {});
       var r = addToCollection(ne);
@@ -442,6 +462,7 @@ var RuoteForms = function() {
   }
 
   return {
+    TEXTS: TEXTS,
     renderForm: renderForm,
     resetForm: resetForm,
     toJson: toJson,
