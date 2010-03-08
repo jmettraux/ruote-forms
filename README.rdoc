@@ -19,7 +19,59 @@ or
   http://localhost:4567/form.html
 or
   http://localhost:4567/sheet.html
+
+
+== usage
+
+Make sure you included a link to the ruote-forms.js in your HTML document.
+
+  <script src="js/ruote-forms.js"></script>
+
+then, have an empty div like that one :
+
+  <div id='rform'></div>
+
+to let ruote-forms populate it with a form :
+
+  <script>
+    RuoteForms.renderForm
+      ('rform',
+       { 'customer': { 'name': 'John', 'address': 'somewhere' },
+         'product': 12345,
+         'premium': true }
+      );
+  </script>
    
+to fetch the current state of the form (in a textarea whose id is 'rform_output' for example) :
+
+  document.getElementById('rform_output').value = RuoteForms.toJson('rform');
+
+You can reset the form or undo it :
+
+  <a href="" onclick="RuoteForms.resetForm('rform'); return false;">reset</a>
+  <a href="" onclick="RuoteForms.undo('rform'); return false;">undo</a>
+
+
+== renderForm options
+
+The renderForm method accepts an optional hash parameter, for options :
+
+  <script>
+    RuoteForms.renderForm
+      ('rform',
+       { 'customer': { 'name': 'John', 'address': 'somewhere' },
+         'product': 12345,
+         'premium': true }
+       { lock_top_keys: true }
+      );
+  </script>
+
+The options are
+
+* lock_top_keys : when true and the top element is a Hash (dictionary), its keys won't be editable
+* no_more_top_keys : when true and the top element is a Hash, its keys are not editable and new ones cannot be added
+* read_only : the form is read_only.
+
 
 == source
 
