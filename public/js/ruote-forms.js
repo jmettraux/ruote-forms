@@ -148,7 +148,15 @@ var RuoteForms = function () {
   }
 
   function toObject () {
+
+    if (this.parentNode.originalOptions &&
+        this.parentNode.originalOptions.read_only) {
+
+      return this.parentNode.originalData;
+    }
+
     var type = this.className.match(/rform\_([^ ]*)/)[1];
+
     if (type == 'array') {
       return childrenOfClass(this, 'rform_item').inject([], function(a, i) {
         var v = i.toObject();
@@ -188,6 +196,7 @@ var RuoteForms = function () {
     if (type == 'new') {
       return EmptyItem;
     }
+
     alert("unknown type '" + type + "'");
   }
 
@@ -342,14 +351,14 @@ var RuoteForms = function () {
   function render_item (elt, data, options) {
     var ei = rcreate(elt, 'div', { 'class': 'rform_item' });
     render(ei, data, options);
-    addItemButtons(ei);
+    if ( ! options.read_only) addItemButtons(ei);
     return ei;
   }
 
   function render_array (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_array' });
     for (var i = 0; i < data.length; i++) { render_item(e, data[i], options); }
-    addArrayButtons(e);
+    if ( ! options.read_only) addArrayButtons(e);
     return e;
   }
 
@@ -365,7 +374,7 @@ var RuoteForms = function () {
     }
     else {
       render(ek, data[0], options);
-      addEntryButtons(e);
+      if ( ! options.read_only) addEntryButtons(e);
     }
     var evv = render(ev, data[1], options);
     return e;
@@ -374,7 +383,8 @@ var RuoteForms = function () {
   function render_object (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_hash' });
     for (var k in data) { render_entry(e, [ k, data[k] ], options); }
-    if ( ! options.no_new_top_keys || ! elt.className.match(/rform\_root/)) {
+    if ( ! options.read_only &&
+         ( ! options.no_new_top_keys || ! elt.className.match(/rform\_root/))) {
       addHashButtons(e);
     }
     return e;
@@ -391,6 +401,10 @@ var RuoteForms = function () {
     eff.onclick = function () { ef.checked = true; }
     if (data) et.checked = true;
     else ef.checked = true;
+    if (options.read_only) {
+      et.disabled = true;
+      ef.disabled = true;
+    }
     return e;
   }
 
