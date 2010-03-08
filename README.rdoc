@@ -69,8 +69,8 @@ The renderForm method accepts an optional hash parameter, for options :
 The options are
 
 * lock_top_keys : when true and the top element is a Hash (dictionary), its keys won't be editable
-* no_more_top_keys : when true and the top element is a Hash, its keys are not editable and new ones cannot be added
-* read_only : the form is read_only.
+* no_more_top_keys : when true and the top element is a Hash, new keys cannot be added
+* read_only : the form is read-only
 
 
 == source
