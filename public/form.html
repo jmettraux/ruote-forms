@@ -40,13 +40,22 @@
 </div>
 
 <script>
+  //RuoteForms.renderForm
+  //  ('rform',
+  //   { 'k0': 'v0',
+  //     'k1': { 'k1.0': 'v1.0', 'k1.1': 'v1.1' },
+  //     'k2': 4,
+  //     'k3': false,
+  //     'k4': [ 'red', 'green', 'blue\nwith stripes' ] });
   RuoteForms.renderForm
     ('rform',
      { 'k0': 'v0',
        'k1': { 'k1.0': 'v1.0', 'k1.1': 'v1.1' },
        'k2': 4,
        'k3': false,
-       'k4': [ 'red', 'green', 'blue\nwith stripes' ] });
+       'k4': [ 'red', 'green', 'blue\nwith stripes' ] },
+     { 'lock_top_keys': true }
+    );
 
   function displayInput () {
     RuoteForms.renderForm(

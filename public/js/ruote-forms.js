@@ -22,7 +22,7 @@
  * Made in Japan.
  */
 
-var RuoteForms = function() {
+var RuoteForms = function () {
 
   // TODO
   //
@@ -134,9 +134,6 @@ var RuoteForms = function() {
     }
     a.inject = inject;
     return a;
-    //return container.childNodes.filter(function (n) {
-    //  return n.nodeType == 1 && n.className == className;
-    //});
   }
   function childOfClass (container, className) {
     return childrenOfClass(container, className)[0];
@@ -151,7 +148,10 @@ var RuoteForms = function() {
   }
 
   function toObject () {
+    console.log('==');
+    console.log(this.className);
     var type = this.className.match(/rform\_([^ ]*)/)[1];
+    console.log(type);
     if (type == 'array') {
       return childrenOfClass(this, 'rform_item').inject([], function(a, i) {
         var v = i.toObject();
@@ -179,6 +179,7 @@ var RuoteForms = function() {
       ];
     }
     if (type == 'string') {
+      if (this.className.match(/rform\_readonly/)) return this.innerHTML;
       return this.firstChild.value;
     }
     if (type == 'number') {
@@ -292,7 +293,6 @@ var RuoteForms = function() {
   }
 
   function addToCollection (elt) {
-    //elt.stack();
     var ecollection = elt.parentNode;
     ecollection.insertBefore(elt, elt.previousSibling);
     return false;
@@ -361,14 +361,20 @@ var RuoteForms = function() {
     var ek = rcreate(e, 'div', { 'class': 'rform_key' });
     var ev = rcreate(e, 'div', { 'class': 'rform_value' });
     addEntryButtons(e);
-    render(ek, data[0], options);
+    if (options.lock_top_keys && elt.parentNode.className.match(/rform_root/)) {
+      var s = rcreate(
+        ek, 'span', { 'class': 'rform_string rform_readonly' }, data[0]);
+      s.value = data[0];
+    }
+    else {
+      render(ek, data[0], options);
+    }
     var evv = render(ev, data[1], options);
     return e;
   }
 
   function render_object (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_hash' });
-    //var ks = []; for (var kk in data) { ks.push(kk); }; ks = ks.sort();
     for (var k in data) { render_entry(e, [ k, data[k] ], options); }
     addHashButtons(e);
     return e;
@@ -418,7 +424,7 @@ var RuoteForms = function() {
   function render_string (elt, data, options) {
     var klass = options['class'] || 'rform_string';
     var e = rcreate(elt, 'span', { 'class': klass });
-    if (options['read-only'])
+    if (options.read_only)
       e.innerHTML = escapeHtml(data);
     else if (data.match(/\n/))
       create(e, 'textarea', { 'type': 'text' }, data);
