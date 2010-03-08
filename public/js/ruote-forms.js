@@ -360,14 +360,15 @@ var RuoteForms = function () {
     var e = rcreate(elt, 'div', { 'class': 'rform_entry' });
     var ek = rcreate(e, 'div', { 'class': 'rform_key' });
     var ev = rcreate(e, 'div', { 'class': 'rform_value' });
-    addEntryButtons(e);
     if (options.lock_top_keys && elt.parentNode.className.match(/rform_root/)) {
       var s = rcreate(
         ek, 'span', { 'class': 'rform_string rform_readonly' }, data[0]);
       s.value = data[0];
+      // no addEntryButtons
     }
     else {
       render(ek, data[0], options);
+      addEntryButtons(e);
     }
     var evv = render(ev, data[1], options);
     return e;
