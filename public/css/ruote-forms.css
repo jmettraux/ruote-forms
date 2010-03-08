@@ -3,15 +3,14 @@
 /* tb rl */
 /* t r b l */
 
-input, textarea {
-	/*font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
-	font-size: 1em;
-	width: 186px;*/
+.rform_root textarea {
+	width: 300px;
+	height: 120px;
 }
-input[type=text] {
+.rform_root input[type=text] {
 	width: 150px;
 }
-input[type=radio] {
+.rform_root input[type=radio] {
 	margin: 0 4px;
 }
 .rform_root {
@@ -85,12 +84,6 @@ input[type=radio] {
 .rform_item .rform_buttons {
 	padding: 0 4px;
 }
-.rform_hash .rform_entry:first-child {
-	/*padding-top: 0;*/
-}
-.rform_hash > .rform_buttons {
-	clear: both;
-}
 .rform_item > * {
 	display: inline-block;
 }
@@ -114,7 +107,7 @@ a.rform_button_movedown {
 	background-position: 0 -60px;
 }
 a.rform_button_change {
-	background-position: 0 -80px;
+	background-position: 0 -100px;
 }
 a.rform_button_add:hover {
 	background-position: -20px 0;
@@ -129,5 +122,5 @@ a.rform_button_movedown:hover {
 	background-position: -20px -60px;
 }
 a.rform_button_change:hover {
-	background-position: -20px -80px;
+	background-position: -20px -100px;
 }
