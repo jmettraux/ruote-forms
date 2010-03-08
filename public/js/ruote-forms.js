@@ -148,10 +148,7 @@ var RuoteForms = function () {
   }
 
   function toObject () {
-    console.log('==');
-    console.log(this.className);
     var type = this.className.match(/rform\_([^ ]*)/)[1];
-    console.log(type);
     if (type == 'array') {
       return childrenOfClass(this, 'rform_item').inject([], function(a, i) {
         var v = i.toObject();
@@ -377,7 +374,9 @@ var RuoteForms = function () {
   function render_object (elt, data, options) {
     var e = rcreate(elt, 'div', { 'class': 'rform_hash' });
     for (var k in data) { render_entry(e, [ k, data[k] ], options); }
-    addHashButtons(e);
+    if ( ! options.no_new_top_keys || ! elt.className.match(/rform\_root/)) {
+      addHashButtons(e);
+    }
     return e;
   }
 
